@@ -1,0 +1,43 @@
+/******************signUpOwner******************/
+
+url : http://localhost:3000/api/ownerService/signUpOwner
+input : {
+            "name":"seif",
+            "email":"seif@app.com",
+            "phoneNumber":"12345678",
+            "login":"seif@app.com",
+            "password":"123",
+            "accountType":"freeTrail"
+        }
+
+/******************signUpOwner******************/
+
+url : http://localhost:3000/api/AuthService/signin
+input : {
+            "login":"seif@app.com",
+            "password":"123"
+        }
+
+/******************signUpOwner******************/
+
+url : http://localhost:3000/api/storeService/createStore
+input : {
+            "name":"seif",
+            "amount": 3000,
+            "payed": 100.1,
+            "logo": "Mylogo",
+            "taxCode": "taxCode",
+            "ownerId":1
+        }
+
+
+/******************signUpOwner******************/
+
+url : http://localhost:3000/api/userService/createUser
+input :{
+        "name":"seif",
+        "login":"seif2@store1.user",
+        "password":"123",
+        "salary":"",
+        "storeId":2
+        }
