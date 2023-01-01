@@ -3,9 +3,10 @@ const db = require('../config/dbConfig');
 const {validateStore} = require('../models/validator');
 
 
+const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
-const User = db.user;
+const StoreUser = db.storeuser;
 const Role = db.role;
 
 exports.createStore = async function(req,res){

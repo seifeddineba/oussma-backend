@@ -3,10 +3,10 @@ const {validateOwner} = require('../models/validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
+const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
-const User = db.user;
+const StoreUser = db.storeuser;
 const Role = db.role;
 
 
@@ -20,26 +20,41 @@ exports.signUpOwner = async function (req, res) {
             return res.status(400).send(result.error.details[0].message);
         }
 
-        const existingOwner = await Owner.findOne({ where: { email: email } });
+        const existingOwner = await User.findOne({ where: { login: login } });
         if (existingOwner) {
-            return res.status(401).send('Email already in used');
+            return res.status(401).send('login already in used');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        // create new owner
+
+
+        const transaction = await db.sequelize.transaction();
+
+        const user = await User.create({
+            name,
+            login,
+            password: hashedPassword
+          }, { transaction });
+
+
         const owner = await Owner.create({
-            name: name,
-            email: email,
+            email,
             phoneNumber: phoneNumber,
-            login: login,
-            password: hashedPassword,
-            accountType: accountType,
-        });
+            accountType,
+            userId: user.id
+        }, { transaction });
+
+
+        await transaction.commit();
 
         res.status(200).send({ message:"owner created" });
     } catch (error) {
         console.log(error)
-    res.status(404).send(error);
+        if (transaction) await transaction.rollback();{
+            res.status(500).send(err);  
+        }
+
+        res.status(404).send(error);
     }
 }
 
@@ -50,21 +65,27 @@ exports.signin = async function(req,res){
         if( !login&&!password){
             return res.status(400).send({ error: 'missing login or password' });
         }
-        const owner = await Owner.findOne({ where: { login: login } });
-        if (!owner) {
-            return res.status(401).send({ error: 'Invalid login or password' });
+        const user = await User.findOne({ 
+            where: { login: login },
+            include:[
+                { model:Owner, as:"owner" },
+                { model:StoreUser, as:"storeUser" }
+            ]
+        });
+        if (!user) {
+            return res.status(401).send({ error: 'Invalid login' });
         }
     
         // compare the password using bcrypt
-        const passwordMatch = await bcrypt.compare(password, owner.password);
+        const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-          return res.status(402).send({ error: 'Invalid login or password' });
+          return res.status(402).send({ error: 'Invalid password' });
         }
     
-        // create a JWT for the owner
-        const token = jwt.sign({ id: owner.id }, "myapp", { expiresIn: '24h' });
+        // create a JWT for the user
+        const token = jwt.sign({ id: user.id }, "myapp", { expiresIn: '24h' });
     
-        res.status(200).send({ token });
+        res.status(200).send({ token :token,user });
     } catch (error) {
         console.log(error)
     res.status(404).send(error);

@@ -30,7 +30,7 @@ function validateUser(User){
         name: Joi.string().required(),
         login: Joi.string().required(),
         password: Joi.string().required(),
-        salary: Joi.number().optional().allow(""||null),
+        salary: Joi.number().optional().allow(""),
         storeId: Joi.number().required()
     });
     return schema.validate(User);

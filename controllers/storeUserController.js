@@ -3,9 +3,10 @@ const {validateUser} = require('../models/validator');
 const bcrypt = require('bcrypt');
 
 
+const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
-const User = db.user;
+const StoreUser = db.storeuser;
 const Role = db.role;
 
 exports.createUser = async function(req,res){
@@ -17,12 +18,19 @@ exports.createUser = async function(req,res){
           return res.status(400).send(result.error.details[0].message);
         }
 
-        const existingUser = await User.findOne({ where: { login: login , storeId: storeId  } });
+        const existingUser = await User.findOne({ 
+            where: { login: login },
+            include:[{
+                model:StoreUser,
+                where:{
+                    storeId
+                }}]
+            });
         if (existingUser) {
             return res.status(401).send('user login already in used');
         }
-    
-        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const transaction = await db.sequelize.transaction();
 
         Store.findOne( {where:{
             id: storeId
@@ -31,19 +39,31 @@ exports.createUser = async function(req,res){
             if(!store){
                 return res.status(402).send("store doesn't existe");
             }
-                    // create new store
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             const user = await User.create({
-                name: name,
-                login: login,
-                password: hashedPassword,
-                salary: salary,
+                name,
+                login,
+                password: hashedPassword
+              }, { transaction });
+                    // create new store
+            const storeUser = await StoreUser.create({
+                salary,
+                userId: user.id,
                 storeId: storeId
-            });
+            },{ transaction });
+
+            await transaction.commit();
     
             res.status(200).send({ message:"user created" });
         })
 
       } catch (error) {
+        console.log(error)
+        if (transaction) await transaction.rollback();{
+            res.status(500).send(err);  
+        }
         res.status(404).send(error);
       }
 }

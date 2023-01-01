@@ -7,11 +7,11 @@ module.exports = (sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-    name: Sequelize.STRING,
+    // name: Sequelize.STRING,
     email: Sequelize.STRING,
     phoneNumber: Sequelize.STRING,
-    login: Sequelize.STRING,
-    password: Sequelize.STRING,
+    //login: Sequelize.STRING,
+    // password: Sequelize.STRING,
     accountType: Sequelize.STRING
   }
   ,{

@@ -1,7 +1,7 @@
 module.exports = function (app) {
     const ownerController = require('../controllers/ownerController');
     const storeContoller = require('../controllers/sotreController');
-    const userContoller = require('../controllers/userController');
+    const storeUserController = require('../controllers/storeUserController');
     // owner
     app.post("/api/ownerService/signUpOwner", ownerController.signUpOwner);
     app.post("/api/AuthService/signin", ownerController.signin);
@@ -10,7 +10,7 @@ module.exports = function (app) {
     app.post("/api/storeService/createStore", storeContoller.createStore);
 
     // user
-    app.post("/api/userService/createUser", userContoller.createUser);
+    app.post("/api/userService/createUser", storeUserController.createUser);
 
     // role
 }

@@ -11,19 +11,27 @@ db.sequelize = sequelize;
 
 
 // declaration modeles
+db.user = require('../models/user')(sequelize,Sequelize);
 db.owner = require('../models/owner')(sequelize,Sequelize);
 db.store = require('../models/store')(sequelize,Sequelize);
-db.user = require('../models/user')(sequelize,Sequelize);
+db.storeuser = require('../models/storeUser')(sequelize,Sequelize);
 db.role = require('../models/role')(sequelize,Sequelize);
 
 // relations between tables
+db.user.hasOne(db.owner);
+db.owner.belongsTo(db.user);
+
+db.user.hasOne(db.storeuser);
+db.storeuser.belongsTo(db.user);
+
+
 db.owner.hasMany(db.store);
 db.store.belongsTo(db.owner);
 
-db.store.hasMany(db.user);
-db.user.belongsTo(db.store);
+db.store.hasMany(db.storeuser);
+db.storeuser.belongsTo(db.store);
 
-db.user.belongsToMany(db.role, { through: 'UserRole' });
-db.role.belongsToMany(db.user, { through: 'UserRole' });
+db.storeuser.belongsToMany(db.role, { through: 'UserRole' });
+db.role.belongsToMany(db.storeuser, { through: 'UserRole' });
 
 module.exports = db;
