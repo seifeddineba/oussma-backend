@@ -10,7 +10,7 @@ input : {
             "accountType":"freeTrail"
         }
 
-/******************signUpOwner******************/
+/******************signin******************/
 
 url : http://localhost:3000/api/AuthService/signin
 input : {
@@ -18,7 +18,7 @@ input : {
             "password":"123"
         }
 
-/******************signUpOwner******************/
+/******************createStore******************/
 
 url : http://localhost:3000/api/storeService/createStore
 input : {
@@ -31,7 +31,7 @@ input : {
         }
 
 
-/******************signUpOwner******************/
+/******************createUser******************/
 
 url : http://localhost:3000/api/userService/createUser
 input :{
