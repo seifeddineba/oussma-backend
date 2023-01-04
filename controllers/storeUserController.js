@@ -1,19 +1,19 @@
 const db = require('../config/dbConfig');
-const {validateUser} = require('../models/validator');
+const {validateStoreUser} = require('../models/validator');
 const bcrypt = require('bcrypt');
 
 
 const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
-const StoreUser = db.storeuser;
-const Role = db.role;
+const StoreUser = db.storeUser;
+//const Permission = db.permission;
 
-exports.createUser = async function(req,res){
+exports.createStoreUser = async function(req,res){
     try {
-        const {name,login,password,salary,storeId} = req.body
+        const {fullName,login,password,salary,permissionType,storeId} = req.body
         // validate the request body using the schema
-        const result = validateUser(req.body);
+        const result = validateStoreUser(req.body);
         if (result.error) {
           return res.status(400).send(result.error.details[0].message);
         }
@@ -27,7 +27,22 @@ exports.createUser = async function(req,res){
                 }}]
             });
         if (existingUser) {
-            return res.status(401).send('user login already in used');
+            return res.status(500).send('user login already in used');
+        }
+
+        // checking the owner
+        const user = await getUser(req.user.id)
+
+        // getPermisson
+        const subscription = await getOwnerSubscription(user.owner.id)
+        if(subscription){    
+          if(new Date(subscription.endDate).getTime()*1000<Date.now()){
+            return res.status(500).send('store name already in used');
+          }
+          const nbstoreUsers = StoreUser.count({ where: { ownerId :user.owner.id } });
+          if(nbstoreUsers>=userAllowed.storeAllowed){
+            return res.status(500).send('you passed the limit of allowed users!');
+          }
         }
 
         const transaction = await db.sequelize.transaction();
@@ -37,21 +52,22 @@ exports.createUser = async function(req,res){
         }})
         .then(async(store)=>{
             if(!store){
-                return res.status(402).send("store doesn't existe");
+                return res.status(500).send("store doesn't existe");
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const user = await User.create({
-                name,
+                fullName,
                 login,
                 password: hashedPassword
               }, { transaction });
                     // create new store
             const storeUser = await StoreUser.create({
+                permissionType,
                 salary,
                 userId: user.id,
-                storeId: storeId
+                storeId
             },{ transaction });
 
             await transaction.commit();
@@ -64,6 +80,6 @@ exports.createUser = async function(req,res){
         if (transaction) await transaction.rollback();{
             res.status(500).send(err);  
         }
-        res.status(404).send(error);
+        res.status(500).send(error);
       }
 }

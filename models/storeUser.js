@@ -9,13 +9,15 @@ module.exports = (sequelize) =>{
         },
         // name: Sequelize.STRING,
         // login: Sequelize.STRING,
-        // password: Sequelize.STRING,
+        permissionType: {
+            type: Sequelize.ENUM,
+            values: ['SELLER', 'CHIEF', 'RESPONSABLE']
+          },
         salary: Sequelize.FLOAT,
     }
     , {
         timestamps: true,
-        createdAt: 'created_at',
-        updatedAt: 'updated_at',
+        createdAt: 'created_at'
       })
     return storeUser;
 }

@@ -10,15 +10,11 @@ module.exports = (sequelize) => {
     // name: Sequelize.STRING,
     email: Sequelize.STRING,
     phoneNumber: Sequelize.STRING,
-    //login: Sequelize.STRING,
+    // nationality: Sequelize.STRING,
     // password: Sequelize.STRING,
-    accountType: Sequelize.STRING
+    //accountType: Sequelize.STRING
   }
-  ,{
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-  });
+  );
 
   return Owner;
 };

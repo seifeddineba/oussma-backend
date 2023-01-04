@@ -11,7 +11,8 @@ const env = {
       acquire: 30000,
       idle: 10000
     },
-    dialectModule: mysql2
+    dialectModule: mysql2,
+    JWT_SECRET:"myapp"
 }
   
 module.exports = env;

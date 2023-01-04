@@ -7,14 +7,13 @@ module.exports = (sequelize) =>{
             autoIncrement: true,
             primaryKey: true,
         },
-        name: Sequelize.STRING,
+        fullName: Sequelize.STRING,
         login: Sequelize.STRING,
         password: Sequelize.STRING,
     }
     , {
         timestamps: true,
-        createdAt: 'created_at',
-        updatedAt: 'updated_at',
+        createdAt: 'created_at'
       })
     return User;
 }

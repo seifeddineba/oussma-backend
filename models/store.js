@@ -7,15 +7,14 @@ module.exports = (sequelize) =>{
             autoIncrement: true,
             primaryKey: true,
         },
-        name: Sequelize.STRING,
+        storeName: Sequelize.STRING,
         amount: Sequelize.FLOAT,
         payed: Sequelize.FLOAT,
         logo: Sequelize.STRING,
         taxCode: Sequelize.STRING,
     } , {
         timestamps: true,
-        createdAt: 'created_at',
-        updatedAt: 'updated_at',
+        createdAt: 'created_at'
       })
 
     return Store;

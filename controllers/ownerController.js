@@ -1,18 +1,18 @@
 const db = require('../config/dbConfig');
 const {validateOwner} = require('../models/validator');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 
 const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
-const StoreUser = db.storeuser;
-const Role = db.role;
+const StoreUser = db.storeUser;
+const Subscription = db.subscription;
 
 
 exports.signUpOwner = async function (req, res) {
     try {
-        const {name,email,phoneNumber,login,password,accountType} = req.body
+        const {fullName,email,phoneNumber,login,password} = req.body
         // check if email is already in used
 
         const result = validateOwner(req.body);
@@ -22,7 +22,7 @@ exports.signUpOwner = async function (req, res) {
 
         const existingOwner = await User.findOne({ where: { login: login } });
         if (existingOwner) {
-            return res.status(401).send('login already in used');
+            return res.status(500).send('login already in used');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ exports.signUpOwner = async function (req, res) {
         const transaction = await db.sequelize.transaction();
 
         const user = await User.create({
-            name,
+            fullName,
             login,
             password: hashedPassword
           }, { transaction });
@@ -39,11 +39,21 @@ exports.signUpOwner = async function (req, res) {
 
         const owner = await Owner.create({
             email,
-            phoneNumber: phoneNumber,
-            accountType,
+            phoneNumber,
             userId: user.id
         }, { transaction });
 
+        const originalDate = new Date();
+        const newDate = originalDate.setDate(originalDate.getDate() + 14);
+        const subscription = await Subscription.create({
+            description: "FREE_TARIL",
+            period: 14,
+            endDate: newDate,
+            price: 0,
+            storeAllowed: 1,
+            userAllowed: 5,
+            ownerId:owner.id
+        }, { transaction })
 
         await transaction.commit();
 
@@ -54,40 +64,6 @@ exports.signUpOwner = async function (req, res) {
             res.status(500).send(err);  
         }
 
-        res.status(404).send(error);
-    }
-}
-
-exports.signin = async function(req,res){
-    try {
-        // find the owner by login
-        const {login,password} = req.body
-        if( !login&&!password){
-            return res.status(400).send({ error: 'missing login or password' });
-        }
-        const user = await User.findOne({ 
-            where: { login: login },
-            include:[
-                { model:Owner, as:"owner" },
-                { model:StoreUser, as:"storeUser" }
-            ]
-        });
-        if (!user) {
-            return res.status(401).send({ error: 'Invalid login' });
-        }
-    
-        // compare the password using bcrypt
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-          return res.status(402).send({ error: 'Invalid password' });
-        }
-    
-        // create a JWT for the user
-        const token = jwt.sign({ id: user.id }, "myapp", { expiresIn: '24h' });
-    
-        res.status(200).send({ token :token,user });
-    } catch (error) {
-        console.log(error)
-    res.status(404).send(error);
+        res.status(500).send(error);
     }
 }
