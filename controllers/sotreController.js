@@ -1,7 +1,7 @@
 const { owner } = require('../config/dbConfig');
 const db = require('../config/dbConfig');
 const {validateStore} = require('../models/validator');
-const { getUser } = require('./sharedFunctions');
+const { getUser, getUserSubscription } = require('./sharedFunctions');
 
 
 const User = db.user;
@@ -29,10 +29,10 @@ exports.createStore = async function(req,res){
         const user = await getUser(req.user.id)
 
         // getPermisson
-        const subscription = await getOwnerSubscription(user.owner.id)
+        const subscription = await getUserSubscription(user.id)
         if(subscription){    
           if(new Date(subscription.endDate).getTime()*1000<Date.now()){
-            return res.status(500).send('store name already in used');
+            return res.status(500).send('your subsicription is over');
           }
           const nbstores = Store.count({ where: { ownerId :user.owner.id } });
           if(nbstores>=subscription.storeAllowed){
@@ -57,6 +57,10 @@ exports.createStore = async function(req,res){
             res.status(200).send({ message:"store created" });
          
       } catch (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          status:500,
+          error:"server",
+          message : error.message
+      }); 
       }
 }

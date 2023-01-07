@@ -1,19 +1,19 @@
 const Joi = require('joi');
 
-function validateOwner(Owner) {
+module.exports.validateOwner = function validateOwner(owner) {
     const schema = Joi.object({
         fullName: Joi.string().required(),
-        email: Joi.string().email().required(),
+        email: Joi.string().required().email(),
         phoneNumber: Joi.string().required(),
-        login: Joi.string().required(),
-        password: Joi.string().required(),
+        login: Joi.string().required().email(),
+        password: Joi.string().min(6).required(),
         //accountType: Joi.string().valid('freeTrail', 'offer').required()
     });
 
-    return schema.validate(Owner);
+    return schema.validate(owner);
 }
 
-function validateStore(Store){
+module.exports.validateStore = function validateStore(store){
     const schema = Joi.object().keys({
         storeName: Joi.string().required(),
         amount: Joi.number().required(),
@@ -22,30 +22,126 @@ function validateStore(Store){
         taxCode: Joi.string().required(),
         //ownerId: Joi.number().required(),
     });
-    return schema.validate(Store);
+    return schema.validate(store);
 }
 
-function validateStoreUser(StoreUser){
+module.exports.validateStoreUser = function validateStoreUser(storeUser){
     const schema = Joi.object().keys({
         fullName: Joi.string().required(),
-        login: Joi.string().required(),
-        password: Joi.string().required(),
-        salary: Joi.number().optional().allow(""),
+        login: Joi.string().required().email(),
+        password: Joi.string().min(6).required(),
+        salary: Joi.number().required().allow(""),
         permissionType: Joi.string().valid('SELLER', 'CHIEF', 'RESPONSABLE').required(),
         storeId: Joi.number().required()
     });
-    return schema.validate(StoreUser);
+    return schema.validate(storeUser);
 }
 
 
-function validateSubscription(){
+module.exports.validateSubscription = function validateSubscription(subscription){
     const schema = Joi.object().keys({
-
+        description: Joi.string().required(),
+        period: Joi.number().required(),
+        endDate: Joi.date().required(),
+        price: Joi.number().required(),
+        storeAllowed: Joi.number().required(),
+        userAllowed: Joi.number().required()
     })
-    return schema.validate()
+    return schema.validate(subscription)
+}
+
+module.exports.validateOrder = function validateOrder(order){
+    const schema = Joi.object().keys({
+        clientName: Joi.string().required(),
+        phoneNumber: Joi.string().required(),
+        address: Joi.string().required(),
+        deliveryPrice: Joi.number().required(),
+        sellPrice: Joi.number().required(),
+        totalAmount: Joi.number().required(),
+        //gain: Joi.number().required(),
+        orderStatus: Joi.string().valid('', 'CONFIRMED','PACKEDUP',
+        'READY','INPROGRESS','RETURN','RETURNRECEIVED',
+        'RETURNPAID','DELIVERED','PAYED').required(),
+        // exchange: Joi.boolean().required(),
+        // exchangeReceipt: Joi.boolean().required(),
+        note: Joi.string().required().allow(""),
+        collectionDate: Joi.date().required(),
+        arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),quantity: Joi.number().required()})).required(),
+        storeId: Joi.number().required(),
+        deliveryCompanyId: Joi.number().required().allow(null),
+    })
+    return schema.validate(order)
+}
+
+module.exports.validateProduct = function validateProduct(product){
+    const schema = Joi.object().keys({
+        productReference: Joi.string().required(),
+        quantityReleased: Joi.number().required(),
+        stock: Joi.number().required(),
+        purchaseAmount: Joi.number().required(),
+        amoutSells: Joi.number().required(),
+        storeId: Joi.number().required(),
+        categoryId: Joi.number().required()
+    })
+    return schema.validate(product)
+}
+
+module.exports.validateArrival = function validateProduct(arrival){
+    const schema = Joi.object().keys({
+        quantity: Joi.number().required(),
+        buyingPrice: Joi.number().required(),
+        amount: Joi.number().required(),
+        facture: Joi.string().required(),
+        arrivalDate: Joi.date().required(),
+        productId: Joi.number().required(),
+        vendorId: Joi.number().required(),
+    })
+    return schema.validate(arrival)
 }
 
 
-module.exports.validateOwner = validateOwner;
-module.exports.validateStore = validateStore;
-module.exports.validateStoreUser = validateStoreUser;
+module.exports.validateVendor = function validateVendor(vendor){
+    const schema = Joi.object().keys({
+        name: Joi.string().required(),
+        email : Joi.string().required(),
+        phoneNumber: Joi.string().required(),
+        note: Joi.number().required().allow(""),
+        storeId: Joi.number().required()
+    })
+    return schema.validate(vendor)
+}
+
+module.exports.validateCategory = function validateCategory(category){
+    const schema = Joi.object().keys({
+        categoryName: Joi.string().required(),
+        storeId: Joi.number().required()
+    })
+    return schema.validate(category)
+}
+
+
+module.exports.validateDeliveryCompany = function validateDeliveryCompany(deliveryCompany){
+    const schema = Joi.object().keys({
+        name: Joi.string().required(),
+        email: Joi.string().required(),
+        phoneNumber: Joi.string().required(),
+        note: Joi.string().required().allow(""),
+        storeId: Joi.number().required()
+    })
+    return schema.validate(deliveryCompany)
+}
+
+module.exports.validateCharge = function validateCharge(charge){
+    const schema = Joi.object().keys({
+        type: Joi.string().valid('RECEIVED', 'EFFECTED').required(),
+        amount: Joi.number().required(),
+        note: Joi.string().required().allow(""),
+        storeId: Joi.number().required()
+    })
+    return schema.validate(charge)
+}
+
+
+// module.exports.validateOwner = validateOwner;
+//module.exports.validateStore = validateStore;
+//module.exports.validateStoreUser = validateStoreUser;

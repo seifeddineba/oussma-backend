@@ -1,6 +1,6 @@
 const db = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
-const { getOwnerSubscription } = require('./sharedFunctions');
+const { getUserSubscription, getUser ,getStoreForOwner } = require('./sharedFunctions');
 const jwt = require("jsonwebtoken");
 const env = require("../config/env");
 const { serialize } = require('cookie') ;
@@ -40,19 +40,61 @@ exports.signin = async function(req,res){
 
 
         // getPermisson
-        const subscription = await getOwnerSubscription(user.owner.id)
+        const subscription = await getUserSubscription(user.id)
+
+        let store
+        if(user.owner){
+            store = await getStoreForOwner(user.owner.id)
+        }
+        if(user.storeUser){
+            store = await Store.findByPk(user.storeUser.storeId)
+        }
+        
+        
     
         // create a JWT for the user
         const token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: '24h' });
-        const serialized = serialize('token', token, {
-            httpOnly: true,
-            maxAge: 60 * 60 * 24 
-        });
+        const serialized = serialize('token', token, 
+           { httpOnly: true},
+           { maxAge: 60 * 60 * 24} 
+        );
 
         res.cookie('token', serialized)
-        res.status(200).send({ user , subscription });
+        res.status(200).send({ user , subscription, store });
     } catch (error) {
-        console.log(error)
-    res.status(404).send(error);
+        res.status(500).send({
+            status:500,
+            error:"server",
+            message : error.message
+        }); 
+    }
+}
+
+exports.getCurrentUser = async function(req,res){
+    try {
+        const user = await getUser(req.user.id)
+        const subsicription = await getUserSubscription(req.user.id)
+        if (!user) {
+            return res.status(401).send({ error: 'Invalid user' });
+        }
+        if (!subsicription) {
+            return res.status(401).send({ error: 'Invalid subsicription' });
+        }
+
+        let store
+        if(user.owner){
+            store = await getStoreForOwner(user.owner.id)
+        }
+        if(user.storeUser){
+            store = await Store.findByPk(user.storeUser.storeId)
+        }
+
+        res.status(200).send({ user , subsicription ,store});
+    } catch (error) {
+        res.status(500).send({
+            status:500,
+            error:"server",
+            message : error.message
+        }); 
     }
 }

@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateStoreUser} = require('../models/validator');
 const bcrypt = require('bcrypt');
+const { getUser, getUserSubscription } = require('./sharedFunctions');
 
 
 const User = db.user;
@@ -34,13 +35,13 @@ exports.createStoreUser = async function(req,res){
         const user = await getUser(req.user.id)
 
         // getPermisson
-        const subscription = await getOwnerSubscription(user.owner.id)
+        const subscription = await getUserSubscription(user.id)
         if(subscription){    
           if(new Date(subscription.endDate).getTime()*1000<Date.now()){
-            return res.status(500).send('store name already in used');
+            return res.status(500).send('your subsicription is over');
           }
           const nbstoreUsers = StoreUser.count({ where: { ownerId :user.owner.id } });
-          if(nbstoreUsers>=userAllowed.storeAllowed){
+          if(nbstoreUsers>=subscription.userAllowed){
             return res.status(500).send('you passed the limit of allowed users!');
           }
         }
@@ -76,10 +77,10 @@ exports.createStoreUser = async function(req,res){
         })
 
       } catch (error) {
-        console.log(error)
-        if (transaction) await transaction.rollback();{
-            res.status(500).send(err);  
-        }
-        res.status(500).send(error);
+        res.status(500).send({
+          status:500,
+          error:"server",
+          message : error.message
+      }); 
       }
 }

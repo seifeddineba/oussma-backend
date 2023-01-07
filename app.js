@@ -14,7 +14,7 @@ const swaggerUi = require('swagger-ui-express');
 const sequelize = new Sequelize('myshop', env.login, env.pwd, env);
 const swaggerFile = require('./swagger_output.json')
 
-// db.sequelize.sync()
+// db.sequelize.sync({ alter: true })
 //   .then(() => {
 //     console.log('Tables created or refreshed successfully');
 //   })

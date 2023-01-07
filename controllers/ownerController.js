@@ -52,18 +52,17 @@ exports.signUpOwner = async function (req, res) {
             price: 0,
             storeAllowed: 1,
             userAllowed: 5,
-            ownerId:owner.id
+            userId:user.id
         }, { transaction })
 
         await transaction.commit();
 
         res.status(200).send({ message:"owner created" });
     } catch (error) {
-        console.log(error)
-        if (transaction) await transaction.rollback();{
-            res.status(500).send(err);  
-        }
-
-        res.status(500).send(error);
+        res.status(500).send({
+            status:500,
+            error:"server",
+            message : error.message
+        }); 
     }
 }
