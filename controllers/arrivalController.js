@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const { validateArrival } = require('../models/validator');
+const { validateArrival, isEmptyObject } = require('../models/validator');
 
 const User = db.user;
 const Owner = db.owner;
@@ -40,3 +40,50 @@ exports.createArrival = async function (req,res){
         }); 
     }
 }
+
+exports.getArrivalById = async function (req,res){
+    try {
+        const arrival = await Arrival.findByPk(req.query.id)
+        if(!arrival){
+            return res.status(500).send('arrival does not exist!')
+        }
+        res.status(200).send(arrival);
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+} 
+
+exports.updateArrival = async function(req,res){
+    try {
+      const {quantity,buyingPrice,amount,facture,arrivalDate}=req.body
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+  
+      await Arrival.update(req.body,{where:{id:req.query.id}});
+  
+        res.status(200).send({ message:"Arrival Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+exports.deleteArrival = async function(req,res){
+  Arrival.findByPk(req.query.id)
+    .then(arrival => {
+      if (!arrival) {
+        return res.status(500).send({ message: 'arrival not found' });
+      }
+      return arrival.remove()
+        .then(() => res.send({ message: 'arrival deleted successfully' }));
+    })
+    .catch(error => res.status(400).send(error));
+};

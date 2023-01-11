@@ -1,7 +1,8 @@
 const db = require('../config/dbConfig');
-const {validateStoreUser} = require('../models/validator');
+const {validateStoreUser, isEmptyObject} = require('../models/validator');
 const bcrypt = require('bcrypt');
 const { getUser, getUserSubscription } = require('./sharedFunctions');
+const { user } = require('../config/dbConfig');
 
 
 const User = db.user;
@@ -84,3 +85,59 @@ exports.createStoreUser = async function(req,res){
       }); 
       }
 }
+
+exports.getStoreUserById = async function (req,res){
+  try {
+      const storeUser = await StoreUser.findByPk(req.query.id)
+      if(!storeUser){
+          return res.status(500).send('storeUser does not exist!')
+      }
+      res.status(200).send(storeUser);
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+}  
+
+exports.updateStoreUser = async function(req,res){
+  try {
+    const {fullName,login,password,salary,permissionType,userId}=req.body
+
+    if(isEmptyObject(req.body)){
+      return res.status(400).send('All fields should not be empty')
+    }
+
+    const user = await User.findOne({ where: { id: req.query.id } });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await user.update({fullName,login,password:hashedPassword});
+
+    await StoreUser.update(
+      {salary,permissionType}, 
+      { where: {userId:user.id} });
+
+      res.status(200).send({ message:"sotreUser Updated" });
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+}
+
+exports.deleteStoreUser = async function(req,res){
+  StoreUser.findByPk(req.query.id)
+    .then(storeUser => {
+      if (!storeUser) {
+        return res.status(500).send({ message: 'storeUser not found' });
+      }
+      return storeUser.remove()
+        .then(() => res.send({ message: 'storeUser deleted successfully' }));
+    })
+    .catch(error => res.status(400).send(error));
+};

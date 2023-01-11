@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const { validateOrder } = require('../models/validator');
+const { validateOrder, isEmptyObject } = require('../models/validator');
 
 
 const User = db.user;
@@ -13,9 +13,9 @@ const OrderProduct = db.orderProduct
 
 exports.createOrder = async function (req, res) {
     try {
-        const {clientName,phoneNumber,address,deliveryPrice,sellPrice,
+        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
             totalAmount,orderStatus,note,collectionDate,arrayProductQuantity
-            ,storeId,deliveryCompanyId} = req.body
+            ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
         
         const result = validateOrder(req.body);
@@ -34,6 +34,8 @@ exports.createOrder = async function (req, res) {
             clientName,
             phoneNumber,
             address,
+            city,
+            region,
             deliveryPrice,
             sellPrice,
             totalAmount,
@@ -42,7 +44,9 @@ exports.createOrder = async function (req, res) {
             collectionDate,
             gain:0,
             storeId: store.id,
-            deliveryCompanyId
+            deliveryCompanyId,
+            reduction,
+            sponsorId
         }).then(async (order) => {
             let data = arrayProductQuantity.map((item)=>{
                 return {...item,orderId:order.id}
@@ -50,17 +54,6 @@ exports.createOrder = async function (req, res) {
             OrderProduct.bulkCreate(data).then(() => {
                 res.status(200).send({ message:"order created" });
               });
-            //   console.log(order.id)
-            //   const rerer = await Order.findOne({
-            //       where: {
-            //         id: 20
-            //       },
-            //       include: [{
-            //         model: Product,
-            //         as: 'products',
-            //       }]
-            //     })
-            //     res(rerer)
           });
     } catch (error) {
         res.status(500).send({
@@ -70,3 +63,54 @@ exports.createOrder = async function (req, res) {
         }); 
     }
 }
+
+
+exports.getOrderById = async function (req,res){
+    try {
+        const order = await Order.findByPk(req.query.id)
+        if(!order){
+            return res.status(500).send('order does not exist!')
+        }
+        res.status(200).send(order);
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+} 
+
+exports.updateOrder = async function(req,res){
+    try {
+        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
+            totalAmount,orderStatus,note,collectionDate,reduction,orderId} = req.body
+  
+
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+
+      await Order.update(req.body,{where:{id:req.query.id}});
+
+        res.status(200).send({ message:"Order Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+  exports.deleteOrder = async function(req,res){
+    Order.findByPk(req.query.id)
+      .then(order => {
+        if (!order) {
+          return res.status(500).send({ message: 'order not found' });
+        }
+        return order.remove()
+          .then(() => res.send({ message: 'order deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+  };

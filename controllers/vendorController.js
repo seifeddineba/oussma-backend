@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const {validateVendor } = require('../models/validator');
+const {validateVendor, isEmptyObject } = require('../models/validator');
 
 
 const User = db.user;
@@ -39,3 +39,53 @@ exports.createVendor = async function (req, res) {
         
     }
 }
+
+exports.getVendorById = async function (req,res){
+    try {
+        const vendor = await Vendor.findByPk(req.query.id)
+        if(!vendor){
+            return res.status(500).send('vendor does not exist!')
+        }
+        res.status(200).send(vendor);
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+} 
+
+exports.updateVendor = async function(req,res){
+    try {
+      const {name,email,phoneNumber,note,vendorId}=req.body
+  
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+
+      await Vendor.update(req.body,{where:{id:req.query.id}});
+
+        res.status(200).send({ message:"Vendor Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+
+  exports.deleteVendor = async function(req,res){
+    Vendor.findByPk(req.query.id)
+      .then(vendor => {
+        if (!vendor) {
+          return res.status(500).send({ message: 'vendor not found' });
+        }
+        return vendor.remove()
+          .then(() => res.send({ message: 'vendor deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+  };
+

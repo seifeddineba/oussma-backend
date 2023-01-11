@@ -1,6 +1,6 @@
 const { owner } = require('../config/dbConfig');
 const db = require('../config/dbConfig');
-const {validateStore} = require('../models/validator');
+const {validateStore, isEmptyObject} = require('../models/validator');
 const { getUser, getUserSubscription } = require('./sharedFunctions');
 
 
@@ -64,3 +64,51 @@ exports.createStore = async function(req,res){
       }); 
       }
 }
+
+exports.getStoreById = async function (req,res){
+  try {
+      const store = await Store.findByPk(req.query.id)
+      if(!store){
+          return res.status(500).send('store does not exist!')
+      }
+      res.status(200).send(store);
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+}
+
+exports.updateStore = async function(req,res){
+  try {
+    const {startDate,endDate,amountEuro,amountDinar,note,storeId}=req.body
+
+    if(isEmptyObject(req.body)){
+      return res.status(400).send('All fields should not be empty')
+    }
+
+    await Store.update(req.body,{where:{id:req.query.id}});
+
+      res.status(200).send({ message:"Store Updated" });
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+}
+
+exports.deleteStore = async function(req,res){
+  Store.findByPk(req.query.id)
+    .then(store => {
+      if (!store) {
+        return res.status(500).send({ message: 'store not found' });
+      }
+      return store.remove()
+        .then(() => res.send({ message: 'store deleted successfully' }));
+    })
+    .catch(error => res.status(400).send(error));
+};

@@ -55,6 +55,8 @@ module.exports.validateOrder = function validateOrder(order){
         clientName: Joi.string().required(),
         phoneNumber: Joi.string().required(),
         address: Joi.string().required(),
+        city: Joi.string().required(),
+        region: Joi.string().required(),
         deliveryPrice: Joi.number().required(),
         sellPrice: Joi.number().required(),
         totalAmount: Joi.number().required(),
@@ -69,6 +71,8 @@ module.exports.validateOrder = function validateOrder(order){
         arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),quantity: Joi.number().required()})).required(),
         storeId: Joi.number().required(),
         deliveryCompanyId: Joi.number().required().allow(null),
+        reduction: Joi.number().required().allow(null),
+        sponsorId: Joi.number().required().allow(null),
     })
     return schema.validate(order)
 }
@@ -140,6 +144,26 @@ module.exports.validateCharge = function validateCharge(charge){
     })
     return schema.validate(charge)
 }
+
+
+module.exports.validateSponsor = function validateSponsor(sponsor){
+    const schema = Joi.object().keys({
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
+        amountEuro: Joi.number().required(),
+        amountDinar: Joi.number().required(),
+        note: Joi.string().required().allow(""),
+        storeId: Joi.number().required() 
+    })
+    return schema.validate(sponsor)
+}
+
+module.exports.isEmptyObject =   function(obj){
+    let values = Object.values(obj);
+    return values.some(value => value === null || value === '');
+}
+
+
 
 
 // module.exports.validateOwner = validateOwner;

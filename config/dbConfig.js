@@ -21,9 +21,10 @@ db.product = require('../models/product')(sequelize,Sequelize);
 db.orderProduct = require('../models/order_Product')(sequelize,Sequelize);
 db.arrival = require('../models/arrival')(sequelize,Sequelize);
 db.vendor = require('../models/vendor')(sequelize,Sequelize);
-db.category = require('../models/category')(sequelize,Sequelize)
-db.deliveryCompany = require('../models/deliveryCompany')(sequelize,Sequelize)
-db.charge = require('../models/charge')(sequelize,Sequelize)
+db.category = require('../models/category')(sequelize,Sequelize);
+db.deliveryCompany = require('../models/deliveryCompany')(sequelize,Sequelize);
+db.charge = require('../models/charge')(sequelize,Sequelize);
+db.sponsor = require('../models/sponsor')(sequelize,Sequelize);
 
 
 // relations between tables
@@ -95,6 +96,14 @@ db.deliveryCompany.belongsTo(db.store);
 //store hasmany charge
 db.store.hasMany(db.charge);
 db.charge.belongsTo(db.store);
+
+//store hasmany sponsor
+db.store.hasMany(db.sponsor);
+db.sponsor.belongsTo(db.store);
+
+//sponsor hasmany order / order could have 
+db.sponsor.hasMany(db.order);
+db.order.belongsTo(db.sponsor);
 
 
 

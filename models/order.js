@@ -10,6 +10,8 @@ module.exports = (sequelize) => {
         clientName: Sequelize.STRING,
         phoneNumber: Sequelize.STRING,
         address: Sequelize.STRING,
+        city: Sequelize.STRING,
+        region: Sequelize.STRING,
         deliveryPrice: Sequelize.FLOAT,
         sellPrice: Sequelize.FLOAT,
         totalAmount: Sequelize.FLOAT,
@@ -20,6 +22,7 @@ module.exports = (sequelize) => {
             'READY','INPROGRESS','RETURN','RETURNRECEIVED',
             'RETURNPAID','DELIVERED','PAYED']
         },
+        reduction: Sequelize.FLOAT,
         // exchange: Sequelize.BOOLEAN,
         // exchangeReceipt: Sequelize.BOOLEAN,
         note: Sequelize.TEXT,

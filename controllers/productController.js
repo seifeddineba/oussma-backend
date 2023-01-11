@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const {validateProduct} = require('../models/validator');
+const {validateProduct, isEmptyObject} = require('../models/validator');
 
 
 
@@ -48,3 +48,52 @@ exports.createProduct = async function (req,res){
         }); 
     }
 }
+
+exports.getProductById = async function (req,res){
+    try {
+        const product = await Product.findByPk(req.query.id)
+        if(!product){
+            return res.status(500).send('product does not exist!')
+        }
+        res.status(200).send(product);
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+} 
+
+
+exports.updateProduct = async function(req,res){
+    try {
+      const {productReference,quantityReleased,stock,purchaseAmount,amoutSells,productId}=req.body
+  
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+  
+      await Product.update(req.body,{where:{id:req.query.id}});
+  
+        res.status(200).send({ message:"Product Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+  exports.deleteProduct = async function(req,res){
+    Product.findByPk(req.query.id)
+      .then(product => {
+        if (!product) {
+          return res.status(500).send({ message: 'product not found' });
+        }
+        return product.remove()
+          .then(() => res.send({ message: 'product deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+  };

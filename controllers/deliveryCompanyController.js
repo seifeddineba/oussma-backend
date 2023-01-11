@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const {validateDeliveryCompany } = require('../models/validator');
+const {validateDeliveryCompany, isEmptyObject } = require('../models/validator');
 
 
 const User = db.user;
@@ -40,3 +40,51 @@ exports.createDeliveryCompany = async function (req, res) {
         
     }
 }
+
+exports.getDeliveryCompanyById = async function (req,res){
+    try {
+        const deliveryCompany = await DeliveryCompany.findByPk(req.query.id)
+        if(!deliveryCompany){
+            return res.status(500).send('deliveryCompany does not exist!')
+        }
+        res.status(200).send(deliveryCompany);
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+}
+
+exports.updateDeliveryCompany = async function(req,res){
+    try {
+      const {name,email,phoneNumber,note,deliveryCompanyId}=req.body
+  
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+  
+      await DeliveryCompany.update(req.body,{where:{id:req.query.id}});
+  
+        res.status(200).send({ message:"DeliveryCompany Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+  exports.deleteDeliveryCompany = async function(req,res){
+    DeliveryCompany.findByPk(req.query.id)
+      .then(deliveryCompany => {
+        if (!deliveryCompany) {
+          return res.status(500).send({ message: 'deliveryCompany not found' });
+        }
+        return deliveryCompany.remove()
+          .then(() => res.send({ message: 'deliveryCompany deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+  };

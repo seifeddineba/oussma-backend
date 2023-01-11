@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const {validateOwner} = require('../models/validator');
+const {validateOwner, isEmptyObject} = require('../models/validator');
 const bcrypt = require('bcrypt');
 
 
@@ -66,3 +66,59 @@ exports.signUpOwner = async function (req, res) {
         }); 
     }
 }
+
+exports.getOwnerById = async function (req,res){
+    try {
+        const owner = await Owner.findByPk(req.query.id)
+        if(!owner){
+            return res.status(500).send('owner does not exist!')
+        }
+        res.status(200).send(owner);
+    } catch (error) {
+        res.status(500).send({
+            status:500,
+            error:"server",
+            message : error.message
+        });
+    }
+}
+
+exports.updateOwner = async function(req,res){
+    try {
+      const {fullName,login,password,email,phoneNumber,userId}=req.body
+  
+      if(isEmptyObject(req.body)){
+        return res.status(400).send('All fields should not be empty')
+      }
+  
+      const user = await User.findOne({ where: { id: req.query.id } });
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      await user.update({fullName,login,password:hashedPassword});
+  
+      await Owner.update(
+        {email,phoneNumber}, 
+        { where: {userId:user.id} });
+  
+        res.status(200).send({ message:"Owner Updated" });
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  }
+
+  exports.deleteOwner = async function(req,res){
+    Owner.findByPk(req.query.id)
+      .then(owner => {
+        if (!owner) {
+          return res.status(500).send({ message: 'owner not found' });
+        }
+        return owner.remove()
+          .then(() => res.send({ message: 'owner deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+  };

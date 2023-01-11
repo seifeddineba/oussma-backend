@@ -1,5 +1,5 @@
 const db = require('../config/dbConfig');
-const {validateCategory, isEmptyObject } = require('../models/validator');
+const {validateSponsor, isEmptyObject } = require('../models/validator');
 
 
 const User = db.user;
@@ -10,14 +10,14 @@ const Subscription = db.subscription;
 const Order = db.order;
 const Product = db.product;
 const OrderProduct = db.orderProduct;
-const Vendor = db.vendor;
-const Category = db.category
+const Vendor = db.vendor
+const Sponsor = db.sponsor
 
-exports.createCategory = async function (req, res) {
+exports.createSponsor = async function (req, res) {
     try {
         const {storeId}= req.body
 
-        const result = validateCategory(req.body);
+        const result = validateSponsor(req.body);
         if (result.error) {
             return res.status(400).send(result.error.details[0].message);
         }
@@ -28,9 +28,9 @@ exports.createCategory = async function (req, res) {
             return res.status(500).send("store doesn't existe");
         }
 
-        const category = await Category.create(req.body)
+        const sponsor = await Sponsor.create(req.body)
         
-        res.status(200).send({ message:"category created" });
+        res.status(200).send({ message:"sponsor created" });
     } catch (error) {
         res.status(500).send({
             status:500,
@@ -41,13 +41,13 @@ exports.createCategory = async function (req, res) {
     }
 }
 
-exports.getCategoryById = async function (req,res){
+exports.getSponsorById = async function (req,res){
     try {
-        const category = await Category.findByPk(req.query.id)
-        if(!category){
-            return res.status(500).send('category does not exist!')
+        const sponsor = await Sponsor.findByPk(req.query.id)
+        if(!sponsor){
+            return res.status(500).send('sponsor does not exist!')
         }
-        res.status(200).send(category);
+        res.status(200).send(sponsor);
     } catch (error) {
       res.status(500).send({
         status:500,
@@ -58,17 +58,17 @@ exports.getCategoryById = async function (req,res){
 } 
 
 
-exports.updateCategory = async function(req,res){
+exports.updateSponsor = async function(req,res){
     try {
-      const {categoryName,categoryId}=req.body
+      const {startDate,endDate,amountEuro,amountDinar,note,sponsorId}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
-  
-      await Category.update(req.body,{where:{id:req.query.id}});
-  
-        res.status(200).send({ message:"Category Updated" });
+
+      await Sponsor.update(req.body,{where:{id:req.query.id}});
+
+        res.status(200).send({ message:"Sponsor Updated" });
     } catch (error) {
       res.status(500).send({
         status:500,
@@ -78,14 +78,14 @@ exports.updateCategory = async function(req,res){
     }
   }
 
-  exports.deleteCategory = async function(req,res){
-    Category.findByPk(req.query.id)
-      .then(category => {
-        if (!category) {
-          return res.status(500).send({ message: 'category not found' });
+  exports.deleteSponsor = async function(req,res){
+    Sponsor.findByPk(req.query.id)
+      .then(sponsor => {
+        if (!sponsor) {
+          return res.status(500).send({ message: 'sponsor not found' });
         }
-        return category.remove()
-          .then(() => res.send({ message: 'category deleted successfully' }));
+        return sponsor.remove()
+          .then(() => res.send({ message: 'sponsor deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };

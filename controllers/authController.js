@@ -98,3 +98,25 @@ exports.getCurrentUser = async function(req,res){
         }); 
     }
 }
+
+exports.resetPassword = async function (req,res){
+    try {
+        const {password}=req.body
+
+        const user = await User.findByPk(req.user.id);
+
+        if(!user){
+            return res.status(401).send({ error: 'Invalid user' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await user.update({password:hashedPassword})
+    } catch (error) {
+        res.status(500).send({
+            status:500,
+            error:"server",
+            message : error.message
+        }); 
+    }
+}
