@@ -18,13 +18,13 @@ module.exports = (sequelize) => {
         gain: Sequelize.FLOAT,
         orderStatus:  {
             type: Sequelize.ENUM,
-            values: ['', 'CONFIRMED', 'PACKEDUP',
-            'READY','INPROGRESS','RETURN','RETURNRECEIVED',
-            'RETURNPAID','DELIVERED','PAYED']
+            values: ['', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
+            'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
+            'RETOUR PAYÉ','LIVRÉ','PAYÉ']
         },
         reduction: Sequelize.FLOAT,
-        // exchange: Sequelize.BOOLEAN,
-        // exchangeReceipt: Sequelize.BOOLEAN,
+        exchange: Sequelize.BOOLEAN,
+        exchangeReceipt: Sequelize.BOOLEAN,
         note: Sequelize.TEXT,
         collectionDate: Sequelize.DATE
         }, {

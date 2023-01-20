@@ -78,14 +78,20 @@ exports.updateVendor = async function(req,res){
 
 
   exports.deleteVendor = async function(req,res){
-    Vendor.findByPk(req.query.id)
+    await Vendor.findByPk(req.query.id)
       .then(vendor => {
         if (!vendor) {
           return res.status(500).send({ message: 'vendor not found' });
         }
         return vendor.remove()
-          .then(() => res.send({ message: 'vendor deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'vendor deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+
+  exports.getAllVendorByStoreId= async function (req,res){
+    const vendors = await Vendor.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(vendors)
+  }
 

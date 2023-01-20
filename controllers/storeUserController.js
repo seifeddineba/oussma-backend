@@ -131,13 +131,19 @@ exports.updateStoreUser = async function(req,res){
 }
 
 exports.deleteStoreUser = async function(req,res){
-  StoreUser.findByPk(req.query.id)
+  await StoreUser.findByPk(req.query.id)
     .then(storeUser => {
       if (!storeUser) {
         return res.status(500).send({ message: 'storeUser not found' });
       }
       return storeUser.remove()
-        .then(() => res.send({ message: 'storeUser deleted successfully' }));
+        .then(() => res.status(200).send({ message: 'storeUser deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));
 };
+
+
+exports.getAllStoreUserByStoreId= async function (req,res){
+  const storeUsers = await StoreUser.findAll({where:{storeId:req.query.id}})
+  res.status(200).send(storeUsers)
+}

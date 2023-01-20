@@ -57,6 +57,16 @@ module.exports.getStoreForOwner = async function getStoreForOwner(ownerId) {
   }
 }
 
+module.exports.generateRandomString =  async function generateRandomString() {
+  let result = '';
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = characters.length;
+  for (let i = 0; i < 8; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 // module.exports.getProduct = async function getProduct(id) {
 //   try{
 //      const product = await Product.findByPk(id)

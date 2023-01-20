@@ -79,13 +79,18 @@ exports.updateCategory = async function(req,res){
   }
 
   exports.deleteCategory = async function(req,res){
-    Category.findByPk(req.query.id)
+    await Category.findByPk(req.query.id)
       .then(category => {
         if (!category) {
           return res.status(500).send({ message: 'category not found' });
         }
         return category.remove()
-          .then(() => res.send({ message: 'category deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'category deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+  exports.getAllCategoryByStoreId= async function (req,res){
+    const categorys = await Category.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(categorys)
+  }

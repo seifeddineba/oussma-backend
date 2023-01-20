@@ -11,7 +11,7 @@ module.exports = (sequelize) =>{
         // login: Sequelize.STRING,
         permissionType: {
             type: Sequelize.ENUM,
-            values: ['SELLER', 'CHIEF', 'RESPONSABLE']
+            values: ['VENDEUR', 'CHEF', 'RESPONSABLE']
           },
         salary: Sequelize.FLOAT,
     }

@@ -16,6 +16,9 @@ module.exports.validateOwner = function validateOwner(owner) {
 module.exports.validateStore = function validateStore(store){
     const schema = Joi.object().keys({
         storeName: Joi.string().required(),
+        email: Joi.string().required(),
+        phoneNumber: Joi.string().required(),
+        url: Joi.string().required(),
         amount: Joi.number().required(),
         payed: Joi.number().required(),
         logo: Joi.string(),
@@ -31,7 +34,7 @@ module.exports.validateStoreUser = function validateStoreUser(storeUser){
         login: Joi.string().required().email(),
         password: Joi.string().min(6).required(),
         salary: Joi.number().required().allow(""),
-        permissionType: Joi.string().valid('SELLER', 'CHIEF', 'RESPONSABLE').required(),
+        permissionType: Joi.string().valid('VENDEUR', 'CHEF', 'RESPONSABLE').required(),
         storeId: Joi.number().required()
     });
     return schema.validate(storeUser);
@@ -61,11 +64,11 @@ module.exports.validateOrder = function validateOrder(order){
         sellPrice: Joi.number().required(),
         totalAmount: Joi.number().required(),
         //gain: Joi.number().required(),
-        orderStatus: Joi.string().valid('', 'CONFIRMED','PACKEDUP',
-        'READY','INPROGRESS','RETURN','RETURNRECEIVED',
-        'RETURNPAID','DELIVERED','PAYED').required(),
-        // exchange: Joi.boolean().required(),
-        // exchangeReceipt: Joi.boolean().required(),
+        orderStatus: Joi.string().valid('', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
+        'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
+        'RETOUR PAYÉ','LIVRÉ','PAYÉ').required(),
+        exchange: Joi.boolean().required(),
+        exchangeReceipt: Joi.boolean().required(),
         note: Joi.string().required().allow(""),
         collectionDate: Joi.date().required(),
         arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),quantity: Joi.number().required()})).required(),
@@ -137,7 +140,7 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
 
 module.exports.validateCharge = function validateCharge(charge){
     const schema = Joi.object().keys({
-        type: Joi.string().valid('RECEIVED', 'EFFECTED').required(),
+        type: Joi.string().valid('REÇU', 'EFFECTUÉ').required(),
         amount: Joi.number().required(),
         note: Joi.string().required().allow(""),
         storeId: Joi.number().required()

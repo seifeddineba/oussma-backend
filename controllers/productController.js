@@ -87,13 +87,18 @@ exports.updateProduct = async function(req,res){
   }
 
   exports.deleteProduct = async function(req,res){
-    Product.findByPk(req.query.id)
+    await Product.findByPk(req.query.id)
       .then(product => {
         if (!product) {
           return res.status(500).send({ message: 'product not found' });
         }
         return product.remove()
-          .then(() => res.send({ message: 'product deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'product deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+  exports.getAllProductByStoreId= async function (req,res){
+    const products = await Product.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(products)
+  }

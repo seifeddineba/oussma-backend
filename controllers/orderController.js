@@ -14,7 +14,7 @@ const OrderProduct = db.orderProduct
 exports.createOrder = async function (req, res) {
     try {
         const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
-            totalAmount,orderStatus,note,collectionDate,arrayProductQuantity
+            totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayProductQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
         
@@ -29,6 +29,25 @@ exports.createOrder = async function (req, res) {
             return res.status(500).send("store doesn't existe");
         }
 
+
+        const transaction = await db.sequelize.transaction();
+
+        for (let i = 0; i < arrayProductQuantity.length; i++) {
+            const product = await Product.findByPk(arrayProductQuantity[i].productId);
+            if(!product) {
+                return res.status(500).send({ error: 'product not found' });
+            }
+            // Subtract the quantity ordered from the stock
+            if(orderStatus || orderStatus!='ANNULÉ'){
+                if(product.stock < arrayProductQuantity[i].quantity) {
+                    return res.status(500).send({ error: 'product out of stock' });
+                }
+                product.stock -= arrayProductQuantity[i].quantity;
+            }
+            await product.save({transaction});
+        }
+
+
         //gain a caluculer
         const order = await Order.create({
             clientName,
@@ -42,16 +61,19 @@ exports.createOrder = async function (req, res) {
             orderStatus,
             note,
             collectionDate,
+            exchange,
+            exchangeReceipt,
             gain:0,
             storeId: store.id,
             deliveryCompanyId,
             reduction,
             sponsorId
-        }).then(async (order) => {
+        },{transaction}).then(async (order) => {
             let data = arrayProductQuantity.map((item)=>{
                 return {...item,orderId:order.id}
             })
-            OrderProduct.bulkCreate(data).then(() => {
+            OrderProduct.bulkCreate(data).then(async () => {
+                await transaction.commit();
                 res.status(200).send({ message:"order created" });
               });
           });
@@ -83,18 +105,76 @@ exports.getOrderById = async function (req,res){
 
 exports.updateOrder = async function(req,res){
     try {
-        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
-            totalAmount,orderStatus,note,collectionDate,reduction,orderId} = req.body
-  
+        const transaction = await db.sequelize.transaction();
 
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+      
+       if (req.body.orderStatus){
 
-      await Order.update(req.body,{where:{id:req.query.id}});
+        const {orderStatus} = req.body
 
-        res.status(200).send({ message:"Order Updated" });
+        const order = await Order.findOne({where:{id:req.query.id},
+            include:[{model:Product}]})
+            if(!order){
+                return res.status(500).send('order does not exist!')
+            }
+            
+            if((order.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
+            'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
+            {
+                for (let i = 0; i < order.products.length; i++) {
+                    const product = await Product.findByPk(order.products[i].id);
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    // Subtract the quantity ordered from the stock
+                    if(product.stock < order.products[i].orderProducts.quantity) {
+                        return res.status(500).send({ error: 'product out of stock' });
+                    }
+                    product.stock -= order.products[i].orderProducts.quantity;
+                    await product.save({transaction});
+                } 
+            }
+            
+            else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
+            'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') && (orderStatus=='ANNULÉ' ))//+1
+            {
+                for (let i = 0; i < order.products.length; i++) {
+                    const product = await Product.findByPk(order.products[i].id);
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    // ADD the quantity ordered fro the stock
+            
+                    product.stock += order.products[i].orderProducts.quantity;
+                    await product.save({transaction});
+                } 
+    
+            }
+
+            else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
+            {
+                for (let i = 0; i < order.products.length; i++) {
+                    const product = await Product.findByPk(order.products[i].id);
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    // ADD the quantity ordered fro the stock
+                    product.stock += order.products[i].orderProducts.quantity;
+                    await product.save({transaction});
+                } 
+    
+            }
+        }
+
+        await Order.update(req.body,{where:{id:req.query.id}},{transaction});
+        await transaction.commit()
+
+        res.status(200).send({ message: "Order updated"});
     } catch (error) {
+        console.log(error)
       res.status(500).send({
         status:500,
         error:"server",
@@ -104,13 +184,19 @@ exports.updateOrder = async function(req,res){
   }
 
   exports.deleteOrder = async function(req,res){
-    Order.findByPk(req.query.id)
+    await Order.findByPk(req.query.id)
       .then(order => {
         if (!order) {
           return res.status(500).send({ message: 'order not found' });
         }
         return order.remove()
-          .then(() => res.send({ message: 'order deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'order deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+
+  exports.getAllOrderByStoreId= async function (req,res){
+    const orders = await Order.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(orders)
+  }

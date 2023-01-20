@@ -85,18 +85,24 @@ exports.getOwnerById = async function (req,res){
 
 exports.updateOwner = async function(req,res){
     try {
-      const {fullName,login,password,email,phoneNumber,userId}=req.body
+      const {fullName,login,email,phoneNumber,userId}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      const existingLogin = User.findOne({where:{login:login}})
+
+      if(existingLogin){
+        return res.status(500).send('Login already in use !')
+      }
   
       const user = await User.findOne({ where: { id: req.query.id } });
   
-      const hashedPassword = await bcrypt.hash(password, 10);
+      //const hashedPassword = await bcrypt.hash(password, 10);
   
-      await user.update({fullName,login,password:hashedPassword});
-  
+      await user.update({fullName,login});//password:hashedPassword
+      
       await Owner.update(
         {email,phoneNumber}, 
         { where: {userId:user.id} });
@@ -112,13 +118,13 @@ exports.updateOwner = async function(req,res){
   }
 
   exports.deleteOwner = async function(req,res){
-    Owner.findByPk(req.query.id)
+    await Owner.findByPk(req.query.id)
       .then(owner => {
         if (!owner) {
           return res.status(500).send({ message: 'owner not found' });
         }
         return owner.remove()
-          .then(() => res.send({ message: 'owner deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'owner deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };

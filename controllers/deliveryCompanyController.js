@@ -78,13 +78,19 @@ exports.updateDeliveryCompany = async function(req,res){
   }
 
   exports.deleteDeliveryCompany = async function(req,res){
-    DeliveryCompany.findByPk(req.query.id)
+    await DeliveryCompany.findByPk(req.query.id)
       .then(deliveryCompany => {
         if (!deliveryCompany) {
           return res.status(500).send({ message: 'deliveryCompany not found' });
         }
         return deliveryCompany.remove()
-          .then(() => res.send({ message: 'deliveryCompany deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'deliveryCompany deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+
+  exports.getAllDeliveryCompanyByStoreId= async function (req,res){
+    const deliveryCompanys = await DeliveryCompany.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(deliveryCompanys)
+  }

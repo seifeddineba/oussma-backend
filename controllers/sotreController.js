@@ -12,7 +12,7 @@ const StoreUser = db.storeUser;
 
 exports.createStore = async function(req,res){
     try {
-        const {storeName,amount,payed,logo,taxCode} = req.body
+        const {storeName,email,phoneNumber,url,amount,payed,logo,taxCode} = req.body
         // validate the request body using the schema
        
         const result = validateStore(req.body);
@@ -48,6 +48,9 @@ exports.createStore = async function(req,res){
             // create new store
             const store = await Store.create({
               storeName,
+              email,
+              phoneNumber,
+              url,
               amount,
               payed,
               logo,
@@ -102,13 +105,19 @@ exports.updateStore = async function(req,res){
 }
 
 exports.deleteStore = async function(req,res){
-  Store.findByPk(req.query.id)
+  await Store.findByPk(req.query.id)
     .then(store => {
       if (!store) {
         return res.status(500).send({ message: 'store not found' });
       }
       return store.remove()
-        .then(() => res.send({ message: 'store deleted successfully' }));
+        .then(() => res.status(200).send({ message: 'store deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));
 };
+
+
+exports.getAllStoresByOwnerId = async function(req,res){
+  const stores = await Store.findAll({where:{ownerId:req.query.id}})
+  res.status(200).send(stores)
+}

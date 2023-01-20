@@ -79,13 +79,18 @@ exports.updateSponsor = async function(req,res){
   }
 
   exports.deleteSponsor = async function(req,res){
-    Sponsor.findByPk(req.query.id)
+    await Sponsor.findByPk(req.query.id)
       .then(sponsor => {
         if (!sponsor) {
           return res.status(500).send({ message: 'sponsor not found' });
         }
         return sponsor.remove()
-          .then(() => res.send({ message: 'sponsor deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'sponsor deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+  exports.getAllSponsorByStoreId= async function (req,res){
+    const sponsors = await Sponsor.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(sponsors)
+  }

@@ -1,6 +1,6 @@
 const db = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
-const { getUserSubscription, getUser ,getStoreForOwner } = require('./sharedFunctions');
+const { getUserSubscription, getUser ,getStoreForOwner, generateRandomString } = require('./sharedFunctions');
 const jwt = require("jsonwebtoken");
 const env = require("../config/env");
 const { serialize } = require('cookie') ;
@@ -101,17 +101,27 @@ exports.getCurrentUser = async function(req,res){
 
 exports.resetPassword = async function (req,res){
     try {
-        const {password}=req.body
+        const {email}=req.body
 
-        const user = await User.findByPk(req.user.id);
+        const owner = await Owner.findOne({where:{email}});
 
-        if(!user){
-            return res.status(401).send({ error: 'Invalid user' });
+        if(!owner){
+            return res.status(401).send({ error: 'Invalid owner' });
         }
+
+        const password = await generateRandomString()
+        console.log(password)
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        const user = await User.findOne({where:{id:owner.userId}})
+
         await user.update({password:hashedPassword})
+
+        //await sendMail(password)
+
+        return res.status(200).send({ message: 'password reseted and sent to your email' });
+
     } catch (error) {
         res.status(500).send({
             status:500,
@@ -120,3 +130,32 @@ exports.resetPassword = async function (req,res){
         }); 
     }
 }
+
+
+async function sendMail (password,email){
+    let transport = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      service: 'gmail',
+      secure: false,
+      auth: {
+        user: '',
+        pass: ''
+      }
+    });
+    
+    // Define the email options
+    let mailOptions = {
+      from: '"adnan-taxi-service" adtaxi92@gmail.com',
+      to: email,
+      subject: 'reset password',
+      text: 'Votre mote de pass',
+      html: `<p>Votre mote de pass : ${password}</p>`
+    };
+    
+    // Send the email
+    transport.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+    }); 
+  }

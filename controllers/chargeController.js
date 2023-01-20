@@ -74,13 +74,18 @@ exports.updateCharge = async function(req,res){
   }
 
   exports.deleteCharge = async function(req,res){
-    Charge.findByPk(req.query.id)
+    await Charge.findByPk(req.query.id)
       .then(charge => {
         if (!charge) {
           return res.status(500).send({ message: 'charge not found' });
         }
         return charge.remove()
-          .then(() => res.send({ message: 'charge deleted successfully' }));
+          .then(() => res.status(200).send({ message: 'charge deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
   };
+
+  exports.getAllChargeByStoreId= async function (req,res){
+    const charges = await Charge.findAll({where:{storeId:req.query.id}})
+    res.status(200).send(charges)
+  }

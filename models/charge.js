@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
     },
     type: {
         type: Sequelize.ENUM,
-        values: ['RECEIVED', 'EFFECTED']
+        values: ['REÇU', 'EFFECTUÉ']
     },
     amount: Sequelize.FLOAT,
     note: Sequelize.TEXT
