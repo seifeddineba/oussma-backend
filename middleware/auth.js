@@ -8,15 +8,15 @@ module.exports = (req, res, next) => {
     .status(401)
     .json({ message: "Access denied. No token provided." });
 
-  let cookies = {};
+ /*  let cookies = {};
 
   const cookiesArray = token?.split(';');
 
     cookiesArray.forEach((cookie) => {
         const [key, value] = cookie.trim().split('=');
         cookies[key] = value;
-    });
-   let cookie = cookies.token
+    }); */
+   let cookie = token
 
 
 
@@ -24,7 +24,7 @@ module.exports = (req, res, next) => {
 
 
   try {
-    const decoded = jwt.verify(cookie, env.JWT_SECRET);
+    const decoded = jwt.verify(cookie, config.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {

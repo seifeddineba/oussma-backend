@@ -54,12 +54,9 @@ exports.signin = async function(req,res){
     
         // create a JWT for the user
         const token = jwt.sign({ id: user.id }, env.JWT_SECRET, { expiresIn: '24h' });
-        const serialized = serialize('token', token, 
-           { httpOnly: true},
-           { maxAge: 60 * 60 * 24} 
-        );
+       
 
-        res.cookie('token', serialized)
+        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 24})
         res.status(200).send({ user , subscription, store });
     } catch (error) {
         res.status(500).send({
