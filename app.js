@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+var cors = require('cors');
 app.use(bodyParser.json());
 
 
@@ -21,6 +22,14 @@ const swaggerFile = require('./swagger_output.json')
 //   .catch((error) => {
 //     console.error('Error creating or refreshing tables:', error);
 //   });
+
+var corsOptions = {
+  origin: 'http://127.0.0.1:3000',
+  allowedHeaders : ["content-type", "x-auth"],
+  exposedHeaders: 'x-auth',
+  credentials: true, // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
