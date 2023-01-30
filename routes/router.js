@@ -39,6 +39,7 @@ module.exports = function (app) {
     app.get("/api/userService/getStoreUserById", auth, storeUserController.getStoreUserById);
     app.put("/api/userService/updateStoreUser", auth, storeUserController.updateStoreUser);
     app.delete("/api/userService/deleteStoreUser", auth, storeUserController.deleteStoreUser);
+    app.get("/api/userService/getAllStoreUserByStoreId", auth, storeUserController.getAllStoreUserByStoreId);
 
     // order
     app.post("/api/orderService/createOrder", auth, orderController.createOrder);

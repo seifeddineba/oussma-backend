@@ -24,7 +24,7 @@ const swaggerFile = require('./swagger_output.json')
 //   });
 
 var corsOptions = {
-  origin: 'http://127.0.0.1:3000',
+  origin: 'http://localhost:3005',
   allowedHeaders : ["content-type", "x-auth"],
   exposedHeaders: 'x-auth',
   credentials: true, // some legacy browsers (IE11, various SmartTVs) choke on 204

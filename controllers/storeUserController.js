@@ -41,7 +41,7 @@ exports.createStoreUser = async function(req,res){
           if(new Date(subscription.endDate).getTime()*1000<Date.now()){
             return res.status(500).send('your subsicription is over');
           }
-          const nbstoreUsers = StoreUser.count({ where: { ownerId :user.owner.id } });
+          const nbstoreUsers = StoreUser.count({ where: { userId :user.owner.id } });
           if(nbstoreUsers>=subscription.userAllowed){
             return res.status(500).send('you passed the limit of allowed users!');
           }
