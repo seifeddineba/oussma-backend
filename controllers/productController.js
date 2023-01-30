@@ -92,7 +92,7 @@ exports.updateProduct = async function(req,res){
         if (!product) {
           return res.status(500).send({ message: 'product not found' });
         }
-        return product.remove()
+        return product.destroy()
           .then(() => res.status(200).send({ message: 'product deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

@@ -83,7 +83,7 @@ exports.updateDeliveryCompany = async function(req,res){
         if (!deliveryCompany) {
           return res.status(500).send({ message: 'deliveryCompany not found' });
         }
-        return deliveryCompany.remove()
+        return deliveryCompany.destroy()
           .then(() => res.status(200).send({ message: 'deliveryCompany deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

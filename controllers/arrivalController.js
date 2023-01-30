@@ -82,7 +82,7 @@ exports.deleteArrival = async function(req,res){
       if (!arrival) {
         return res.status(500).send({ message: 'arrival not found' });
       }
-      return arrival.remove()
+      return arrival.destroy()
         .then(() => res.status(200).send({ message: 'arrival deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));

@@ -123,7 +123,7 @@ exports.updateOwner = async function(req,res){
         if (!owner) {
           return res.status(500).send({ message: 'owner not found' });
         }
-        return owner.remove()
+        return owner.destroy()
           .then(() => res.status(200).send({ message: 'owner deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

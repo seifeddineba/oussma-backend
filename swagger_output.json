@@ -53,7 +53,13 @@
     "/api/authService/getCurrentUser": {
       "get": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -80,7 +86,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "password": {
+                "email": {
                   "example": "any"
                 }
               }
@@ -88,8 +94,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Bad Request"
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -147,6 +153,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -173,6 +184,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -187,9 +203,6 @@
                   "example": "any"
                 },
                 "login": {
-                  "example": "any"
-                },
-                "password": {
                   "example": "any"
                 },
                 "email": {
@@ -226,6 +239,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -252,12 +270,26 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
                 "storeName": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "url": {
                   "example": "any"
                 },
                 "amount": {
@@ -297,6 +329,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -323,36 +360,14 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "query",
+            "name": "x-auth",
+            "in": "header",
             "type": "string"
           },
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "startDate": {
-                  "example": "any"
-                },
-                "endDate": {
-                  "example": "any"
-                },
-                "amountEuro": {
-                  "example": "any"
-                },
-                "amountDinar": {
-                  "example": "any"
-                },
-                "note": {
-                  "example": "any"
-                },
-                "storeId": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "id",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -376,6 +391,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -397,10 +417,43 @@
         }
       }
     },
+    "/api/storeService/getAllStoresByOwnerId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/userService/createStoreUser": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -448,7 +501,13 @@
     "/api/userService/getStoreUserById": {
       "get": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "400": {
             "description": "Bad Request"
@@ -462,7 +521,13 @@
     "/api/userService/updateStoreUser": {
       "put": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "400": {
             "description": "Bad Request"
@@ -477,6 +542,11 @@
       "delete": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -497,6 +567,11 @@
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -534,6 +609,12 @@
                   "example": "any"
                 },
                 "collectionDate": {
+                  "example": "any"
+                },
+                "exchange": {
+                  "example": "any"
+                },
+                "exchangeReceipt": {
                   "example": "any"
                 },
                 "arrayProductQuantity": {
@@ -574,7 +655,13 @@
     "/api/orderService/getOrderById": {
       "get": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "400": {
             "description": "Bad Request"
@@ -588,7 +675,13 @@
     "/api/orderService/updateOrder": {
       "put": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "400": {
             "description": "Bad Request"
@@ -603,6 +696,11 @@
       "delete": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -619,10 +717,43 @@
         }
       }
     },
+    "/api/orderService/getAllOrderByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/productService/createProduct": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -675,6 +806,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -700,6 +836,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -754,6 +895,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -775,10 +921,43 @@
         }
       }
     },
+    "/api/productService/getAllProductByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/arrivalService/createArrival": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -816,6 +995,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -841,6 +1025,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -892,6 +1081,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -913,10 +1107,43 @@
         }
       }
     },
+    "/api/arrivalService/getAllArrivalByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/vendorService/createVendor": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -951,6 +1178,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -976,6 +1208,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1027,6 +1264,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1048,10 +1290,43 @@
         }
       }
     },
+    "/api/vendorService/getAllVendorByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/categoryService/createCategory": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1086,6 +1361,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1111,6 +1391,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1153,6 +1438,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1174,10 +1464,43 @@
         }
       }
     },
+    "/api/categoryService/getAllCategoryByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/deliveryCompanyService/createDeliveryCompany": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1212,6 +1535,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1237,6 +1565,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1288,6 +1621,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1309,10 +1647,43 @@
         }
       }
     },
+    "/api/deliveryCompanyService/getAllDeliveryCompanyByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/chargeService/createCharge": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1347,6 +1718,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1372,6 +1748,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1420,6 +1801,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1441,10 +1827,43 @@
         }
       }
     },
+    "/api/chargeService/getAllChargeByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
     "/api/sponsorService/createSponsor": {
       "post": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1479,6 +1898,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1504,6 +1928,11 @@
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "id",
             "in": "query",
@@ -1558,6 +1987,11 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1575,6 +2009,45 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/sponsorService/getAllSponsorByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/subscriptionService/getAllSubscription": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

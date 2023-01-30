@@ -84,7 +84,7 @@ exports.updateCategory = async function(req,res){
         if (!category) {
           return res.status(500).send({ message: 'category not found' });
         }
-        return category.remove()
+        return category.destroy()
           .then(() => res.status(200).send({ message: 'category deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

@@ -86,7 +86,6 @@ exports.getStoreById = async function (req,res){
 
 exports.updateStore = async function(req,res){
   try {
-    const {startDate,endDate,amountEuro,amountDinar,note,storeId}=req.body
 
     if(isEmptyObject(req.body)){
       return res.status(400).send('All fields should not be empty')
@@ -110,7 +109,7 @@ exports.deleteStore = async function(req,res){
       if (!store) {
         return res.status(500).send({ message: 'store not found' });
       }
-      return store.remove()
+      return store.destroy()
         .then(() => res.status(200).send({ message: 'store deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));

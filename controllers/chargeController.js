@@ -79,7 +79,7 @@ exports.updateCharge = async function(req,res){
         if (!charge) {
           return res.status(500).send({ message: 'charge not found' });
         }
-        return charge.remove()
+        return charge.destroy()
           .then(() => res.status(200).send({ message: 'charge deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

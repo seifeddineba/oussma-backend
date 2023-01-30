@@ -189,7 +189,7 @@ exports.updateOrder = async function(req,res){
         if (!order) {
           return res.status(500).send({ message: 'order not found' });
         }
-        return order.remove()
+        return order.destroy()
           .then(() => res.status(200).send({ message: 'order deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

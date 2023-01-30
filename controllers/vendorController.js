@@ -83,7 +83,7 @@ exports.updateVendor = async function(req,res){
         if (!vendor) {
           return res.status(500).send({ message: 'vendor not found' });
         }
-        return vendor.remove()
+        return vendor.destroy()
           .then(() => res.status(200).send({ message: 'vendor deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

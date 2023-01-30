@@ -84,7 +84,7 @@ exports.updateSponsor = async function(req,res){
         if (!sponsor) {
           return res.status(500).send({ message: 'sponsor not found' });
         }
-        return sponsor.remove()
+        return sponsor.destroy()
           .then(() => res.status(200).send({ message: 'sponsor deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));

@@ -104,7 +104,7 @@ exports.getStoreUserById = async function (req,res){
 
 exports.updateStoreUser = async function(req,res){
   try {
-    const {fullName,login,password,salary,permissionType,userId}=req.body
+    const {fullName,login,password,salary,permissionType}=req.body
 
     if(isEmptyObject(req.body)){
       return res.status(400).send('All fields should not be empty')
@@ -136,7 +136,7 @@ exports.deleteStoreUser = async function(req,res){
       if (!storeUser) {
         return res.status(500).send({ message: 'storeUser not found' });
       }
-      return storeUser.remove()
+      return storeUser.destroy()
         .then(() => res.status(200).send({ message: 'storeUser deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));
