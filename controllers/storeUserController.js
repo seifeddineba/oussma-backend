@@ -88,7 +88,16 @@ exports.createStoreUser = async function(req,res){
 
 exports.getStoreUserById = async function (req,res){
   try {
-      const storeUser = await StoreUser.findByPk(req.query.id)
+      const storeUser = await StoreUser.findOne({where :{id : req.query.id},
+        include:[{
+          model:User,
+          attributes: ['fullName','login'],
+          },
+          {
+            model:Store,
+            attributes: ['storeName'],
+            }]
+      })
       if(!storeUser){
           return res.status(500).send('storeUser does not exist!')
       }

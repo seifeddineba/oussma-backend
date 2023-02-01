@@ -133,6 +133,10 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
         email: Joi.string().required(),
         phoneNumber: Joi.string().required(),
         note: Joi.string().required().allow(""),
+        status: Joi.string().valid('ACTIVE', 'INACTIF').required(),
+        deliveryPrice: Joi.number().required(),
+        retourPrice: Joi.number().required(),
+        logo: Joi.string().required(),
         storeId: Joi.number().required()
     })
     return schema.validate(deliveryCompany)
