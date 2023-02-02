@@ -94,3 +94,29 @@ exports.updateDeliveryCompany = async function(req,res){
     const deliveryCompanys = await DeliveryCompany.findAll({where:{storeId:req.query.id}})
     res.status(200).send(deliveryCompanys)
   }
+
+  exports.searchDeliveryCompany = async function(req,res){
+    try {
+        const {name,phoneNumber,id} = req.query;
+  
+        let query;
+        
+        if ( name || phoneNumber ) {
+            query = await DeliveryCompany.findAll({
+                    where: {
+                      name: { [Op.like]: `%${name}%` } ,
+                      phoneNumber: { [Op.like]: `%${phoneNumber}%` },
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await DeliveryCompany.findAll();
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

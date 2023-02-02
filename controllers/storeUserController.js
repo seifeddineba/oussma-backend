@@ -91,7 +91,7 @@ exports.getStoreUserById = async function (req,res){
       const storeUser = await StoreUser.findOne({where :{id : req.query.id},
         include:[{
           model:User,
-          attributes: ['fullName','login'],
+          attributes: ['fullName','login']
           },
           {
             model:Store,
@@ -155,4 +155,38 @@ exports.deleteStoreUser = async function(req,res){
 exports.getAllStoreUserByStoreId= async function (req,res){
   const storeUsers = await StoreUser.findAll({where:{storeId:req.query.id}})
   res.status(200).send(storeUsers)
+}
+
+exports.searchStoreUser = async function(req,res){
+  try {
+      const {fullName,login,id} = req.query;
+
+      let query;
+      
+      if ( fullName || login ) {
+          query = await StoreUser.findAll({
+            include: [
+              {
+                model: User,
+                where: {
+                  fullName: { [Op.like]: `%${fullName}%` } ,
+                  login: { [Op.like]: `%${login}%` } ,
+                },
+                attributes: ['fullName','login'],
+              }
+            ],
+                  where: {
+                    storeId:id
+                  }
+              });
+      } else {
+          query = await StoreUser.findAll({where:{storeId:id}});
+      }
+      res.status(200).send(query);
+  } catch (error) {
+      res.status(500).send({
+          error:"server",
+          message : error.message
+      }); 
+  }
 }

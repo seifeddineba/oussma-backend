@@ -93,3 +93,28 @@ exports.getAllArrivalByStoreId= async function (req,res){
   const arrivals = await Arrival.findAll({where:{storeId:req.query.id}})
   res.status(200).send(arrivals)
 }
+
+exports.searchArrival = async function(req,res){
+  try {
+      const {arrivalDate,id} = req.query;
+
+      let query;
+      
+      if ( arrivalDate ) {
+          query = await Arrival.findAll({
+                  where: {
+                    [Op.eq]: arrivalDate,
+                    storeId:id
+                  }
+              });
+      } else {
+          query = await Arrival.findAll({where:{storeId:id}});
+      }
+      res.status(200).send(query);
+  } catch (error) {
+      res.status(500).send({
+          error:"server",
+          message : error.message
+      }); 
+  }
+}

@@ -120,3 +120,30 @@ exports.getAllStoresByOwnerId = async function(req,res){
   const stores = await Store.findAll({where:{ownerId:req.query.id}})
   res.status(200).send(stores)
 }
+
+  
+exports.searchStore = async function(req,res){
+  try {
+      const {storeName,phoneNumber,id} = req.query;
+
+      let query;
+      
+      if ( storeName || phoneNumber ) {
+          query = await Store.findAll({
+                  where: {
+                    storeName: { [Op.like]: `%${storeName}%` } ,
+                    phoneNumber: { [Op.like]: `%${phoneNumber}%` } ,
+                    ownerId:id
+                  }
+              });
+      } else {
+          query = await Store.findAll({where:{ownerId:id}});
+      }
+      res.status(200).send(query);
+  } catch (error) {
+      res.status(500).send({
+          error:"server",
+          message : error.message
+      }); 
+  }
+}

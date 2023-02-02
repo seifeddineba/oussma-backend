@@ -33,6 +33,7 @@ module.exports = function (app) {
     app.put("/api/storeService/updateStore", auth, storeContoller.updateStore);
     app.delete("/api/storeService/deleteStore", auth, storeContoller.deleteStore);
     app.get("/api/storeService/getAllStoresByOwnerId", auth, storeContoller.getAllStoresByOwnerId);
+    app.get("/api/storeService/searchStore", auth, storeContoller.searchStore);
 
     // user
     app.post("/api/userService/createStoreUser", auth, storeUserController.createStoreUser);
@@ -40,6 +41,7 @@ module.exports = function (app) {
     app.put("/api/userService/updateStoreUser", auth, storeUserController.updateStoreUser);
     app.delete("/api/userService/deleteStoreUser", auth, storeUserController.deleteStoreUser);
     app.get("/api/userService/getAllStoreUserByStoreId", auth, storeUserController.getAllStoreUserByStoreId);
+    app.get("/api/userService/searchStoreUser", auth, storeUserController.searchStoreUser);
 
     // order
     app.post("/api/orderService/createOrder", auth, orderController.createOrder);
@@ -47,6 +49,7 @@ module.exports = function (app) {
     app.put("/api/orderService/updateOrder", auth, orderController.updateOrder);
     app.delete("/api/orderService/deleteOrder", auth, orderController.deleteOrder);
     app.get("/api/orderService/getAllOrderByStoreId", auth, orderController.getAllOrderByStoreId);
+    app.get("/api/orderService/searchOrder", auth, orderController.searchOrder);
 
     //product
     app.post("/api/productService/createProduct", auth, productController.createProduct);
@@ -54,6 +57,7 @@ module.exports = function (app) {
     app.put("/api/productService/updateProduct", auth, productController.updateProduct);
     app.delete("/api/productService/deleteProduct", auth, productController.deleteProduct);
     app.get("/api/productService/getAllProductByStoreId", auth, productController.getAllProductByStoreId);
+    app.get("/api/productService/searchProduct", auth, productController.searchProduct);
 
     //arrival
     app.post("/api/arrivalService/createArrival", auth, arrivalController.createArrival);
@@ -61,6 +65,7 @@ module.exports = function (app) {
     app.put("/api/arrivalService/updateArrival", auth, arrivalController.updateArrival);
     app.delete("/api/arrivalService/deleteArrival", auth, arrivalController.deleteArrival);
     app.get("/api/arrivalService/getAllArrivalByStoreId", auth, arrivalController.getAllArrivalByStoreId);
+    app.get("/api/arrivalService/searchArrival", auth, arrivalController.searchArrival);
 
     //vendor
     app.post("/api/vendorService/createVendor", auth, vendorController.createVendor);
@@ -68,6 +73,7 @@ module.exports = function (app) {
     app.put("/api/vendorService/updateVendor", auth, vendorController.updateVendor);
     app.delete("/api/vendorService/deleteVendor", auth, vendorController.deleteVendor);
     app.get("/api/vendorService/getAllVendorByStoreId", auth, vendorController.getAllVendorByStoreId);
+    app.get("/api/vendorService/searchVendor", auth, vendorController.searchVendor);
     
     //category
     app.post("/api/categoryService/createCategory", auth, categoryController.createCategory);
@@ -75,6 +81,7 @@ module.exports = function (app) {
     app.put("/api/categoryService/updateCategory", auth, categoryController.updateCategory);
     app.delete("/api/categoryService/deleteCategory", auth, categoryController.deleteCategory);
     app.get("/api/categoryService/getAllCategoryByStoreId", auth, categoryController.getAllCategoryByStoreId);
+    app.get("/api/categoryService/searchCategory", auth, categoryController.searchCategory);
 
     //deliveryCompany
     app.post("/api/deliveryCompanyService/createDeliveryCompany", auth, deliveryCompanyController.createDeliveryCompany);
@@ -82,6 +89,7 @@ module.exports = function (app) {
     app.put("/api/deliveryCompanyService/updateDeliveryCompany", auth, deliveryCompanyController.updateDeliveryCompany);
     app.delete("/api/deliveryCompanyService/deleteDeliveryCompany", auth, deliveryCompanyController.deleteDeliveryCompany);
     app.get("/api/deliveryCompanyService/getAllDeliveryCompanyByStoreId", auth, deliveryCompanyController.getAllDeliveryCompanyByStoreId);
+    app.get("/api/deliveryCompanyService/searchDeliveryCompany", auth, deliveryCompanyController.searchDeliveryCompany);
 
     //charge
     app.post("/api/chargeService/createCharge", auth, chargeController.createCharge);
@@ -89,6 +97,7 @@ module.exports = function (app) {
     app.put("/api/chargeService/updateCharge", auth, chargeController.updateCharge);
     app.delete("/api/chargeService/deleteCharge", auth, chargeController.deleteCharge);
     app.get("/api/chargeService/getAllChargeByStoreId", auth, chargeController.getAllChargeByStoreId);
+    app.get("/api/chargeService/searchCharge", auth, chargeController.searchCharge);
 
     //sponsor
     app.post("/api/sponsorService/createSponsor", auth, sponsorController.createSponsor);
@@ -96,6 +105,7 @@ module.exports = function (app) {
     app.put("/api/sponsorService/updateSponsor", auth, sponsorController.updateSponsor);
     app.delete("/api/sponsorService/deleteSponsor", auth, sponsorController.deleteSponsor);
     app.get("/api/sponsorService/getAllSponsorByStoreId", auth, sponsorController.getAllSponsorByStoreId);
+    app.get("/api/sponsorService/searchSponsor", auth, sponsorController.searchSponsor);
 
     //subscription
     app.get("/api/subscriptionService/getAllSubscription",subscriptionController.getAllSubscription);

@@ -200,3 +200,29 @@ exports.updateOrder = async function(req,res){
     const orders = await Order.findAll({where:{storeId:req.query.id}})
     res.status(200).send(orders)
   }
+
+  exports.searchOrder = async function(req,res){
+    try {
+        const {clientName,phoneNumber,id} = req.query;
+  
+        let query;
+        
+        if ( clientName || phoneNumber ) {
+            query = await Order.findAll({
+                    where: {
+                      clientName: { [Op.like]: `%${clientName}%` } ,
+                      phoneNumber: { [Op.like]: `%${phoneNumber}%` },
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Order.findAll({where:{storeId:id}});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

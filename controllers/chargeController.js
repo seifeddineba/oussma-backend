@@ -89,3 +89,28 @@ exports.updateCharge = async function(req,res){
     const charges = await Charge.findAll({where:{storeId:req.query.id}})
     res.status(200).send(charges)
   }
+
+  exports.searchCharge = async function(req,res){
+    try {
+        const {type,id} = req.query;
+  
+        let query;
+        
+        if ( type ) {
+            query = await Charge.findAll({
+                    where: {
+                      type: { [Op.like]: `%${type}%` } ,
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Charge.findAll({where:{storeId:id}});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

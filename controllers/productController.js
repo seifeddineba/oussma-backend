@@ -102,3 +102,29 @@ exports.updateProduct = async function(req,res){
     const products = await Product.findAll({where:{storeId:req.query.id}})
     res.status(200).send(products)
   }
+
+  
+  exports.searchProduct = async function(req,res){
+    try {
+        const {productReference,id} = req.query;
+  
+        let query;
+        
+        if ( productReference ) {
+            query = await Product.findAll({
+                    where: {
+                      productReference: { [Op.like]: `%${productReference}%` } ,
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Product.findAll({where:{storeId:id}});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

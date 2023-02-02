@@ -94,3 +94,28 @@ exports.updateCategory = async function(req,res){
     const categorys = await Category.findAll({where:{storeId:req.query.id}})
     res.status(200).send(categorys)
   }
+
+  exports.searchCategory = async function(req,res){
+    try {
+        const {categoryName,id} = req.query;
+  
+        let query;
+        
+        if ( categoryName ) {
+            query = await Category.findAll({
+                    where: {
+                      categoryName: { [Op.like]: `%${categoryName}%` } ,
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Category.findAll({where:{storeId:id}});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

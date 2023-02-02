@@ -94,3 +94,29 @@ exports.updateSponsor = async function(req,res){
     const sponsors = await Sponsor.findAll({where:{storeId:req.query.id}})
     res.status(200).send(sponsors)
   }
+
+  exports.searchSponsor = async function(req,res){
+    try {
+        const {storeName,phoneNumber,id} = req.query;
+  
+        let query;
+        
+        if ( storeName || phoneNumber ) {
+            query = await Sponsor.findAll({
+                    where: {
+                      storeName: { [Op.like]: `%${storeName}%` } ,
+                      phoneNumber: { [Op.like]: `%${phoneNumber}%` } ,
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Sponsor.findAll({where:{storeId:id}});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }
