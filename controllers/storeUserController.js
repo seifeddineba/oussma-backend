@@ -95,7 +95,7 @@ exports.getStoreUserById = async function (req,res){
           },
           {
             model:Store,
-            attributes: ['storeName'],
+            attributes: ['storeName','id'],
             }]
       })
       if(!storeUser){
@@ -153,7 +153,15 @@ exports.deleteStoreUser = async function(req,res){
 
 
 exports.getAllStoreUserByStoreId= async function (req,res){
-  const storeUsers = await StoreUser.findAll({where:{storeId:req.query.id}})
+  const storeUsers = await StoreUser.findAll({where:{storeId:req.query.id},
+    include:[{
+      model:User,
+      attributes: ['fullName','login']
+      },
+      {
+        model:Store,
+        attributes: ['storeName','id'],
+        }]})
   res.status(200).send(storeUsers)
 }
 
@@ -166,6 +174,11 @@ exports.searchStoreUser = async function(req,res){
       if ( fullName || login ) {
           query = await StoreUser.findAll({
             include: [
+                {
+                  model:Store,
+                  attributes: ['storeName','id'],
+                  }
+              ,
               {
                 model: User,
                 where: {
@@ -180,7 +193,18 @@ exports.searchStoreUser = async function(req,res){
                   }
               });
       } else {
-          query = await StoreUser.findAll({where:{storeId:id}});
+          query = await StoreUser.findAll({where:{storeId:id},
+            include: [
+              {
+                model:Store,
+                attributes: ['storeName','id'],
+                }
+            ,
+            {
+              model: User,
+              attributes: ['fullName','login'],
+            }
+          ]});
       }
       res.status(200).send(query);
   } catch (error) {
