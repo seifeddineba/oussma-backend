@@ -88,7 +88,11 @@ module.exports.validateProduct = function validateProduct(product){
         purchaseAmount: Joi.number().required(),
         amoutSells: Joi.number().required(),
         storeId: Joi.number().required(),
-        categoryId: Joi.number().required()
+        categoryId: Joi.number().required(),
+        sellerReference : Joi.string().required(),
+        name : Joi.string().required(),
+        vendorId: Joi.number().required(),
+        image: Joi.string().required(),
     })
     return schema.validate(product)
 }

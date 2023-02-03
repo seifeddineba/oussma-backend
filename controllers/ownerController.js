@@ -85,11 +85,14 @@ exports.getOwnerById = async function (req,res){
 
 exports.updateOwner = async function(req,res){
     try {
-      const {fullName,login,email,phoneNumber,userId}=req.body
+      const {fullName,login,email,phoneNumber,password,userId}=req.body
   
-      if(isEmptyObject(req.body)){
-        return res.status(400).send('All fields should not be empty')
-      }
+    const data = req.body
+    const { ["password"]: _, ...result } = data;
+
+    if(isEmptyObject(result)){
+      return res.status(400).send('All fields should not be empty')
+    }
 
       const existingLogin = User.findOne({where:{login:login}})
 
@@ -98,10 +101,16 @@ exports.updateOwner = async function(req,res){
       }
   
       const user = await User.findOne({ where: { id: req.query.id } });
+
+      let hashedPassword
+      if(password){
+        hashedPassword = await bcrypt.hash(password, 10);
+      }
+      else{
+        hashedPassword = user.password
+      }
   
-      //const hashedPassword = await bcrypt.hash(password, 10);
-  
-      await user.update({fullName,login});//password:hashedPassword
+      await user.update({fullName,login,password:hashedPassword});
       
       await Owner.update(
         {email,phoneNumber}, 

@@ -1,6 +1,6 @@
 const db = require('../config/dbConfig');
 const {validateProduct, isEmptyObject} = require('../models/validator');
-
+const { Op } = require('sequelize');
 
 
 const User = db.user;
@@ -11,13 +11,13 @@ const Subscription = db.subscription;
 const Order = db.order;
 const Product = db.product;
 const Category = db.category
+const Vendor = db.vendor
 
 
 exports.createProduct = async function (req,res){
     try {
 
-        const {productReference,quantityReleased,stock,
-          purchaseAmount,amoutSells,storeId,categoryId}=req.body
+        const {storeId,categoryId}=req.body
 
         const result = validateProduct(req.body)
         if (result.error) {
@@ -34,6 +34,11 @@ exports.createProduct = async function (req,res){
      
         if(!category){
             return res.status(500).send("category doesn't existe");
+        }
+
+        const vendor = Vendor.findOne({ where: { name: req.body.vendorId }})
+        if (!vendor) {
+          return res.status(500).json({ message: 'Vendor not found' });
         }
 
         const product = await Product.create(req.body)

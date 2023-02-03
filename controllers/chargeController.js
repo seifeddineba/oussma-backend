@@ -1,5 +1,6 @@
 const db = require('../config/dbConfig');
 const { validateCharge, isEmptyObject } = require('../models/validator');
+const { Op } = require('sequelize');
 
 const User = db.user;
 const Owner = db.owner;

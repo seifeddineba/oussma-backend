@@ -3,7 +3,7 @@ const {validateStoreUser, isEmptyObject} = require('../models/validator');
 const bcrypt = require('bcrypt');
 const { getUser, getUserSubscription } = require('./sharedFunctions');
 const { user } = require('../config/dbConfig');
-
+const { Op } = require('sequelize');
 
 const User = db.user;
 const Owner = db.owner;
@@ -115,13 +115,31 @@ exports.updateStoreUser = async function(req,res){
   try {
     const {fullName,login,password,salary,permissionType}=req.body
 
-    if(isEmptyObject(req.body)){
+
+    console.log(isEmptyObject(req.body))
+
+    const data = req.body
+    const { ["password"]: _, ...result } = data;
+
+    if(isEmptyObject(result)){
       return res.status(400).send('All fields should not be empty')
+    }
+
+    const existingLogin = User.findOne({where:{login:login}})
+
+    if(existingLogin){
+      return res.status(500).send('Login already in use !')
     }
 
     const user = await User.findOne({ where: { id: req.query.id } });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    let hashedPassword
+    if(password){
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+    else{
+      hashedPassword = user.password
+    }
 
     await user.update({fullName,login,password:hashedPassword});
 

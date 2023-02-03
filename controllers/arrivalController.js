@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const db = require('../config/dbConfig');
 const { validateArrival, isEmptyObject } = require('../models/validator');
 

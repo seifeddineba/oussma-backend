@@ -105,6 +105,9 @@ db.sponsor.belongsTo(db.store);
 db.sponsor.hasMany(db.order);
 db.order.belongsTo(db.sponsor);
 
+// product has one vendor and the vendor could be in multiple prodouct
+db.vendor.hasMany(db.product);
+
 
 
 module.exports = db;

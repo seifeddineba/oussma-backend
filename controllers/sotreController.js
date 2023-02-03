@@ -2,7 +2,7 @@ const { owner } = require('../config/dbConfig');
 const db = require('../config/dbConfig');
 const {validateStore, isEmptyObject} = require('../models/validator');
 const { getUser, getUserSubscription } = require('./sharedFunctions');
-
+const { Op } = require('sequelize');
 
 const User = db.user;
 const Owner = db.owner;
