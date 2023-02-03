@@ -116,7 +116,7 @@ module.exports.validateVendor = function validateVendor(vendor){
         name: Joi.string().required(),
         email : Joi.string().required(),
         phoneNumber: Joi.string().required(),
-        note: Joi.number().required().allow(""),
+        note: Joi.string().required().allow(""),
         storeId: Joi.number().required()
     })
     return schema.validate(vendor)
