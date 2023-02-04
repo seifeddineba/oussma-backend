@@ -7,6 +7,7 @@ module.exports = (sequelize) => {
         autoIncrement: true,
         primaryKey: true,
     },
+    name : Sequelize.STRING,
     startDate: Sequelize.DATE,
     endDate: Sequelize.DATE,
     amountEuro: Sequelize.FLOAT,

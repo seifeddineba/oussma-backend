@@ -60,7 +60,7 @@ exports.getSponsorById = async function (req,res){
 
 exports.updateSponsor = async function(req,res){
     try {
-      const {startDate,endDate,amountEuro,amountDinar,note,sponsorId}=req.body
+      //const {startDate,endDate,amountEuro,amountDinar,note,sponsorId}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
@@ -97,15 +97,14 @@ exports.updateSponsor = async function(req,res){
 
   exports.searchSponsor = async function(req,res){
     try {
-        const {storeName,phoneNumber,id} = req.query;
+        const {name,id} = req.query;
   
         let query;
         
-        if ( storeName || phoneNumber ) {
+        if ( name ) {
             query = await Sponsor.findAll({
                     where: {
-                      storeName: { [Op.like]: `%${storeName}%` } ,
-                      phoneNumber: { [Op.like]: `%${phoneNumber}%` } ,
+                      name: { [Op.like]: `%${name}%` } ,
                       storeId:id
                     }
                 });

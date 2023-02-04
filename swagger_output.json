@@ -211,6 +211,9 @@
                 "phoneNumber": {
                   "example": "any"
                 },
+                "password": {
+                  "example": "any"
+                },
                 "userId": {
                   "example": "any"
                 }
@@ -445,6 +448,47 @@
         }
       }
     },
+    "/api/storeService/searchStore": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "storeName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/userService/createStoreUser": {
       "post": {
         "description": "",
@@ -559,6 +603,75 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/userService/getAllStoreUserByStoreId": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/userService/searchStoreUser": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "fullName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "login",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -745,6 +858,47 @@
         }
       }
     },
+    "/api/orderService/searchOrder": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "clientName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/productService/createProduct": {
       "post": {
         "description": "",
@@ -760,19 +914,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "productReference": {
-                  "example": "any"
-                },
-                "quantityReleased": {
-                  "example": "any"
-                },
-                "stock": {
-                  "example": "any"
-                },
-                "purchaseAmount": {
-                  "example": "any"
-                },
-                "amoutSells": {
+                "vendorId": {
                   "example": "any"
                 },
                 "storeId": {
@@ -945,6 +1087,42 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/productService/searchProduct": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "productReference",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -1135,6 +1313,42 @@
         }
       }
     },
+    "/api/arrivalService/searchArrival": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "arrivalDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/vendorService/createVendor": {
       "post": {
         "description": "",
@@ -1318,6 +1532,47 @@
         }
       }
     },
+    "/api/vendorService/searchVendor": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/categoryService/createCategory": {
       "post": {
         "description": "",
@@ -1488,6 +1743,42 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/categoryService/searchCategory": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "categoryName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -1675,6 +1966,47 @@
         }
       }
     },
+    "/api/deliveryCompanyService/searchDeliveryCompany": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/chargeService/createCharge": {
       "post": {
         "description": "",
@@ -1855,6 +2187,42 @@
         }
       }
     },
+    "/api/chargeService/searchCharge": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/sponsorService/createSponsor": {
       "post": {
         "description": "",
@@ -1937,33 +2305,6 @@
             "name": "id",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "startDate": {
-                  "example": "any"
-                },
-                "endDate": {
-                  "example": "any"
-                },
-                "amountEuro": {
-                  "example": "any"
-                },
-                "amountDinar": {
-                  "example": "any"
-                },
-                "note": {
-                  "example": "any"
-                },
-                "sponsorId": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -2037,6 +2378,42 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/sponsorService/searchSponsor": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
