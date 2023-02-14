@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateOwner, isEmptyObject} = require('../models/validator');
 const bcrypt = require('bcrypt');
+const { query } = require('express');
 
 
 const User = db.user;
@@ -127,6 +128,7 @@ exports.updateOwner = async function(req,res){
   }
 
   exports.deleteOwner = async function(req,res){
+    try{
     await Owner.findByPk(req.query.id)
       .then(owner => {
         if (!owner) {
@@ -135,5 +137,35 @@ exports.updateOwner = async function(req,res){
         return owner.destroy()
           .then(() => res.status(200).send({ message: 'owner deleted successfully' }));
       })
-      .catch(error => res.status(400).send(error));
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
   };
+
+exports.getAllStoreAndStoreUserByOwnerId = async function (req,res){
+  try {
+    const {id}= req.query
+    
+    const query = await Store.findAll({
+      where:{
+        ownerId:id
+      },
+      include:[{
+        model:StoreUser
+      }]
+    })
+
+    res.status(200).send(query)
+
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+}

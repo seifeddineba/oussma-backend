@@ -147,3 +147,33 @@ exports.searchStore = async function(req,res){
       }); 
   }
 }
+
+exports.getAllStoreForOwnerOrStoreUser = async function (req,res) {
+  try {
+    
+    const {ownerId,storeUserId}=req.query
+    let stores = []
+    if(ownerId){
+      stores = await Store.findAll({where : {
+        ownerId
+      }})
+    }else{
+      //get the store
+      const storeUser = await StoreUser.findByPk(storeUserId)
+
+      const store = await Store.findByPk(storeUser.storeId)
+      // get the owner
+      stores = await Store.findAll({where : {
+        ownerId:store.ownerId
+      }})
+    }
+
+    res.status(200).send(stores);
+  } catch (error) {
+    res.status(500).send({
+      error:"server",
+      message : error.message
+  }); 
+  }
+
+}

@@ -26,6 +26,7 @@ module.exports = function (app) {
     app.get("/api/ownerService/getOwnerById", auth,ownerController.getOwnerById);
     app.put("/api/ownerService/updateOwner", auth,ownerController.updateOwner);
     app.delete("/api/ownerService/deleteOwner", auth,ownerController.deleteOwner);
+    app.get("/api/ownerService/getAllStoreAndStoreUserByOwnerId", auth,ownerController.getAllStoreAndStoreUserByOwnerId);
     
     // store
     app.post("/api/storeService/createStore", auth, storeContoller.createStore);
@@ -34,6 +35,8 @@ module.exports = function (app) {
     app.delete("/api/storeService/deleteStore", auth, storeContoller.deleteStore);
     app.get("/api/storeService/getAllStoresByOwnerId", auth, storeContoller.getAllStoresByOwnerId);
     app.get("/api/storeService/searchStore", auth, storeContoller.searchStore);
+    app.get("/api/storeService/getAllStoreForOwnerOrStoreUser", auth, storeContoller.getAllStoreForOwnerOrStoreUser);
+    
 
     // user
     app.post("/api/userService/createStoreUser", auth, storeUserController.createStoreUser);
@@ -66,6 +69,7 @@ module.exports = function (app) {
     app.delete("/api/arrivalService/deleteArrival", auth, arrivalController.deleteArrival);
     app.get("/api/arrivalService/getAllArrivalByStoreId", auth, arrivalController.getAllArrivalByStoreId);
     app.get("/api/arrivalService/searchArrival", auth, arrivalController.searchArrival);
+    app.post("/api/arrivalService/selectFileForArrival", auth, arrivalController.selectFileForArrival);
 
     //vendor
     app.post("/api/vendorService/createVendor", auth, vendorController.createVendor);

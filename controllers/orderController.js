@@ -10,6 +10,7 @@ const Subscription = db.subscription;
 const Order = db.order;
 const Product = db.product;
 const OrderProduct = db.orderProduct
+const Reference = db.reference
 
 exports.createOrder = async function (req, res) {
     try {
@@ -37,13 +38,24 @@ exports.createOrder = async function (req, res) {
             if(!product) {
                 return res.status(500).send({ error: 'product not found' });
             }
-            // Subtract the quantity ordered from the stock
+
+            const reference = await Reference.findByPk(arrayProductQuantity[i].referenceId);
+            if(!reference) {
+                return res.status(500).send({ error: 'reference not found' });
+            }
+
             if(orderStatus || orderStatus!='ANNULÉ'){
                 if(product.stock < arrayProductQuantity[i].quantity) {
                     return res.status(500).send({ error: 'product out of stock' });
                 }
                 product.stock -= arrayProductQuantity[i].quantity;
+
+                if(reference.quantity < arrayProductQuantity[i].quantity) {
+                    return res.status(500).send({ error: 'product out of stock' });
+                }
+                reference.quantity -= arrayProductQuantity[i].quantity;
             }
+            await reference.save({transaction});
             await product.save({transaction});
         }
 

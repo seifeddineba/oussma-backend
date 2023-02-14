@@ -71,7 +71,7 @@ module.exports.validateOrder = function validateOrder(order){
         exchangeReceipt: Joi.boolean().required(),
         note: Joi.string().required().allow(""),
         collectionDate: Joi.date().required(),
-        arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),quantity: Joi.number().required()})).required(),
+        arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),referenceId:Joi.number().required(),quantity: Joi.number().required()})).required(),
         storeId: Joi.number().required(),
         deliveryCompanyId: Joi.number().required().allow(null),
         reduction: Joi.number().required().allow(null),
@@ -87,12 +87,13 @@ module.exports.validateProduct = function validateProduct(product){
         stock: Joi.number().required(),
         purchaseAmount: Joi.number().required(),
         amoutSells: Joi.number().required(),
-        storeId: Joi.number().required(),
+        storeIds: Joi.array().items(Joi.number()).required(),
         categoryId: Joi.number().required(),
         sellerReference : Joi.string().required(),
         name : Joi.string().required(),
         vendorId: Joi.number().required(),
-        image: Joi.string().required(),
+        file: Joi.string().required(),
+        references:Joi.array().required(),
     })
     return schema.validate(product)
 }
@@ -105,7 +106,7 @@ module.exports.validateArrival = function validateProduct(arrival){
         facture: Joi.string().required(),
         arrivalDate: Joi.date().required(),
         productId: Joi.number().required(),
-        vendorId: Joi.number().required(),
+        vendorId: Joi.number().required()
     })
     return schema.validate(arrival)
 }
@@ -117,7 +118,8 @@ module.exports.validateVendor = function validateVendor(vendor){
         email : Joi.string().required(),
         phoneNumber: Joi.string().required(),
         note: Joi.string().required().allow(""),
-        storeId: Joi.number().required()
+        storeIds: Joi.array().items(Joi.number()).required(),
+        file: Joi.string().required(),
     })
     return schema.validate(vendor)
 }
@@ -125,7 +127,7 @@ module.exports.validateVendor = function validateVendor(vendor){
 module.exports.validateCategory = function validateCategory(category){
     const schema = Joi.object().keys({
         categoryName: Joi.string().required(),
-        storeId: Joi.number().required()
+        storeIds: Joi.array().items(Joi.number()).required()
     })
     return schema.validate(category)
 }
@@ -141,7 +143,7 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
         deliveryPrice: Joi.number().required(),
         retourPrice: Joi.number().required(),
         logo: Joi.string().required(),
-        storeId: Joi.number().required()
+        storeIds: Joi.array().items(Joi.number()).required()
     })
     return schema.validate(deliveryCompany)
 }

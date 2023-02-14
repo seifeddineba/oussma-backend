@@ -25,6 +25,8 @@ db.category = require('../models/category')(sequelize,Sequelize);
 db.deliveryCompany = require('../models/deliveryCompany')(sequelize,Sequelize);
 db.charge = require('../models/charge')(sequelize,Sequelize);
 db.sponsor = require('../models/sponsor')(sequelize,Sequelize);
+db.reference = require('../models/reference')(sequelize,Sequelize);
+db.file = require('../models/file')(sequelize,Sequelize);
 
 
 // relations between tables
@@ -57,29 +59,45 @@ db.order.belongsTo(db.store)
 db.order.belongsToMany(db.product, { through: 'orderProducts' });
 db.product.belongsToMany(db.order, { through: 'orderProducts' });
 
-// store has many product
-db.store.hasMany(db.product)
-db.product.belongsTo(db.store)
+// store has many product and the product could be in many stores
+db.store.belongsToMany(db.product, { through: 'storeProducts' });
+db.product.belongsToMany(db.store, { through: 'storeProducts' });
 
 // product has many arrival
 db.product.hasMany(db.arrival);
 db.arrival.belongsTo(db.product);
 
+//product has many reference and the reference belongs to one product 
+db.product.hasMany(db.reference);
+db.reference.belongsTo(db.product);
+
+//product has one file
+db.product.belongsTo(db.file, { foreignKey: 'fileId', as: 'attachedFile' });
+
+
 // store hasmany vendor
-db.store.hasMany(db.vendor);
-db.vendor.belongsTo(db.store);
+db.store.belongsToMany(db.vendor,{through:"storeVendors"});
+db.vendor.belongsToMany(db.store,{through:"storeVendors"});
 
 // arrival has one vendor
 db.vendor.hasMany(db.arrival);
 db.arrival.belongsTo(db.vendor);
+
+// arrival has an file of facture
+db.file.hasMany(db.arrival)
+db.arrival.belongsTo(db.file)
+
+//vendor has many facture files
+db.vendor.hasMany(db.file);
+db.file.belongsTo(db.vendor);
 
 // category hasMany product
 db.category.hasMany(db.product);
 db.product.belongsTo(db.category);
 
 // store hasmany category
-db.store.hasMany(db.category);
-db.category.belongsTo(db.store);
+db.store.belongsToMany(db.category,{through:"storeCategorys"});
+db.category.belongsToMany(db.store,{through:"storeCategorys"});
 
 //deliverycompany hasmany order
 db.deliveryCompany.hasMany(db.order);
@@ -90,8 +108,8 @@ db.deliveryCompany.hasMany(db.order);
 db.order.belongsTo(db.deliveryCompany);
 
 //store hasmany deliveryCompany
-db.store.hasMany(db.deliveryCompany);
-db.deliveryCompany.belongsTo(db.store);
+db.store.belongsToMany(db.deliveryCompany,{ through: 'storeDeliveryCompanys' });
+db.deliveryCompany.belongsToMany(db.store,{ through: 'storeDeliveryCompanys' });
 
 //store hasmany charge
 db.store.hasMany(db.charge);

@@ -15,20 +15,24 @@ const DeliveryCompany = db.deliveryCompany
 
 exports.createDeliveryCompany = async function (req, res) {
     try {
-        const {storeId}= req.body
+        const {storeIds}= req.body
 
         const result = validateDeliveryCompany(req.body);
         if (result.error) {
             return res.status(400).send(result.error.details[0].message);
         }
 
-        const store = await Store.findByPk(storeId)
-     
-        if(!store){
-            return res.status(500).send("store doesn't existe");
+        for (let i = 0; i < storeIds.length; i++) {
+            const store = await Store.findByPk(storeIds[i]);
+            if(!store) {
+              return res.status(500).send("store doesn't existe");
+            }
         }
 
-        const deliveryCompany = await DeliveryCompany.create(req.body)
+        const deliveryCompany = await DeliveryCompany.create(req.body).then(async (deliveryCompany) => {
+            deliveryCompany.setStores(storeIds)
+          });
+
         
         res.status(200).send({ message:"deliveryCompany created" });
     } catch (error) {
@@ -59,15 +63,32 @@ exports.getDeliveryCompanyById = async function (req,res){
 
 exports.updateDeliveryCompany = async function(req,res){
     try {
-      const {name,email,phoneNumber,note,deliveryCompanyId}=req.body
+      const {name,email,phoneNumber,note,status,deliveryPrice
+        ,retourPrice,logo,storeIds}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      const deliveryCompany = await DeliveryCompany.findByPk(req.query.id)
   
-      await DeliveryCompany.update(req.body,{where:{id:req.query.id}});
+      await deliveryCompany.update(req.body);
+
+      const currentStores = await DeliveryCompany.getStores()
+
+      const storesToRemove = currentStores.filter(
+      (p) => !storeIds.map((c) => c).includes(p.id)
+      );
+      const storesToAdd = storeIds.filter(
+      (c) => !currentStores.map((p) => p.id).includes(c)
+      );
+
+      await Promise.all(
+      storesToRemove.map(async (c) => await deliveryCompany.removeStores(c))
+      );
+      await Promise.all(storesToAdd.map(async (c) => await deliveryCompany.addStores(c)));
   
-        res.status(200).send({ message:"DeliveryCompany Updated" });
+      res.status(200).send({ message:"DeliveryCompany Updated" });
     } catch (error) {
       res.status(500).send({
         status:500,
@@ -78,7 +99,9 @@ exports.updateDeliveryCompany = async function(req,res){
   }
 
   exports.deleteDeliveryCompany = async function(req,res){
-    await DeliveryCompany.findByPk(req.query.id)
+    try {
+
+      await DeliveryCompany.findByPk(req.query.id)
       .then(deliveryCompany => {
         if (!deliveryCompany) {
           return res.status(500).send({ message: 'deliveryCompany not found' });
@@ -87,12 +110,29 @@ exports.updateDeliveryCompany = async function(req,res){
           .then(() => res.status(200).send({ message: 'deliveryCompany deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
+      
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+
   };
 
 
   exports.getAllDeliveryCompanyByStoreId= async function (req,res){
-    const deliveryCompanys = await DeliveryCompany.findAll({where:{storeId:req.query.id}})
+    try{
+    const deliveryCompanys = await Store.findByPk(req.query.id, { include: 'deliveryCompanys' });
     res.status(200).send(deliveryCompanys)
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
   }
 
   exports.searchDeliveryCompany = async function(req,res){
@@ -102,16 +142,31 @@ exports.updateDeliveryCompany = async function(req,res){
         let query;
         
         if ( name || phoneNumber ) {
-            query = await DeliveryCompany.findAll({
-                    where: {
-                      name: { [Op.like]: `%${name}%` } ,
-                      phoneNumber: { [Op.like]: `%${phoneNumber}%` },
-                      storeId:id
-                    }
-                });
+
+          query = await Store.findOne({  
+            where:{
+              id
+            },
+            include: [{
+            model: DeliveryCompany,
+              where: {
+                name: { [Op.like]: `%${name}%` } ,
+                phoneNumber: { [Op.like]: `%${phoneNumber}%` }
+              }
+              }]
+            }
+          );
+
         } else {
-            query = await DeliveryCompany.findAll();
+            query = await Store.findByPk(id, { include: 'deliveryCompanys' });
         }
+
+        if(!query)
+        query=[]
+        else{
+          query=query.deliveryCompanys
+        }
+
         res.status(200).send(query);
     } catch (error) {
         res.status(500).send({

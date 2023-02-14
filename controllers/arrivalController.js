@@ -28,7 +28,7 @@ exports.createArrival = async function (req,res){
        const vendor = await Vendor.findByPk(vendorId)
        if(!vendor){
         return res.status(500).send("vendor doesn't existe");
-   }
+      }  
 
        const arrival = await Arrival.create(req.body)
         
@@ -117,5 +117,24 @@ exports.searchArrival = async function(req,res){
           error:"server",
           message : error.message
       }); 
+  }
+}
+
+exports.selectFileForArrival = async function(req,res){
+  try {
+
+    await Arrival.findByPk(req.query.arrivalId)
+    .then(async (arrival) => {
+      await File.findByPk(req.query.fileId)
+        .then(file => {
+          arrival.setFile(file);
+        });
+    })
+    res.status(200).send({message:"done !"});
+  } catch (error) {
+    res.status(500).send({
+      error:"server",
+      message : error.message
+  }); 
   }
 }

@@ -12,36 +12,47 @@ const Order = db.order;
 const Product = db.product;
 const Category = db.category
 const Vendor = db.vendor
+const File = db.file
+
 
 
 exports.createProduct = async function (req,res){
     try {
 
-        const {storeId,categoryId}=req.body
+        const {storeIds,vendorId,categoryId,references}=req.body
 
         const result = validateProduct(req.body)
         if (result.error) {
             return res.status(400).send(result.error.details[0].message);
         }
 
-        const store = await Store.findByPk(storeId)
-     
-        if(!store){
-            return res.status(500).send("store doesn't existe");
-        }
 
         const category = await Category.findByPk(categoryId)
-     
         if(!category){
             return res.status(500).send("category doesn't existe");
         }
 
-        const vendor = Vendor.findOne({ where: { name: req.body.vendorId }})
+        const vendor = Vendor.findOne({ where: { name: vendorId }})
         if (!vendor) {
           return res.status(500).json({ message: 'Vendor not found' });
         }
 
-        const product = await Product.create(req.body)
+        for (let i = 0; i < storeIds.length; i++) {
+            const store = await Store.findByPk(storeIds[i]);
+            if(!store) {
+              return res.status(500).send("store doesn't existe");
+            }
+        }
+        const fileName = await uploadFile(req.body.file)
+
+        const file = await File.create({url : fileName})
+
+        const product = await Product.create(req.body).then(async (product) => {
+            await product.setStores(storeIds)
+            await product.createReferences(references)
+        });
+
+        await product.update({fileId:file.id})
         
         res.status(200).send({ message:"product created" }); 
 
@@ -73,15 +84,34 @@ exports.getProductById = async function (req,res){
 
 exports.updateProduct = async function(req,res){
     try {
-      const {productReference,quantityReleased,stock,purchaseAmount,amoutSells,productId}=req.body
+      const {name,productReference,quantityReleased,stock,
+        purchaseAmount,amoutSells,sellerReference,file,storeIds}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      const product = await Product.findByPk(req.query.id)
   
-      await Product.update(req.body,{where:{id:req.query.id}});
+      await product.update(req.body);
+
+      const currentStores = await product.getStores()
+
+      const storesToRemove = currentStores.filter(
+      (p) => !storeIds.map((c) => c).includes(p.id)
+      );
+      const storesToAdd = storeIds.filter(
+      (c) => !currentStores.map((p) => p.id).includes(c)
+      );
+
+      await Promise.all(
+      storesToRemove.map(async (c) => await product.removeStores(c))
+      );
+      await Promise.all(storesToAdd.map(async (c) => await product.addStores(c)));
   
-        res.status(200).send({ message:"Product Updated" });
+      await product.update(req.body,{where:{id:req.query.id}});
+  
+      res.status(200).send({ message:"product Updated" });
     } catch (error) {
       res.status(500).send({
         status:500,
@@ -92,6 +122,7 @@ exports.updateProduct = async function(req,res){
   }
 
   exports.deleteProduct = async function(req,res){
+    try{
     await Product.findByPk(req.query.id)
       .then(product => {
         if (!product) {
@@ -101,11 +132,26 @@ exports.updateProduct = async function(req,res){
           .then(() => res.status(200).send({ message: 'product deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
   };
 
   exports.getAllProductByStoreId= async function (req,res){
-    const products = await Product.findAll({where:{storeId:req.query.id}})
+    try{
+    const products = await Store.findByPk(req.query.id, { include: 'products' });
     res.status(200).send(products)
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
   }
 
   
@@ -116,15 +162,28 @@ exports.updateProduct = async function(req,res){
         let query;
         
         if ( productReference ) {
-            query = await Product.findAll({
-                    where: {
-                      productReference: { [Op.like]: `%${productReference}%` } ,
-                      storeId:id
-                    }
-                });
+            query = await Store.findOne({  
+              where:{
+                id
+              },
+              include: [{
+              model: Product,
+                where: {
+                  productReference: { [Op.like]: `%${productReference}%` } ,
+                }
+                }]
+              }
+            );
         } else {
-            query = await Product.findAll({where:{storeId:id}});
+            query = await Store.findByPk(id, { include: 'products' });
         }
+
+        if(!query)
+        query=[]
+        else{
+          query=query.products
+        }
+
         res.status(200).send(query);
     } catch (error) {
         res.status(500).send({

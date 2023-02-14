@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 var cors = require('cors');
-app.use(bodyParser.json());
 
+
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 
 const Sequelize = require('sequelize');
@@ -32,6 +34,8 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
+
 
 sequelize
   .authenticate()

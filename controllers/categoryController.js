@@ -15,22 +15,25 @@ const Category = db.category
 
 exports.createCategory = async function (req, res) {
     try {
-        const {storeId}= req.body
+        const {storeIds }= req.body
 
         const result = validateCategory(req.body);
         if (result.error) {
             return res.status(400).send(result.error.details[0].message);
         }
 
-        const store = await Store.findByPk(storeId)
-     
-        if(!store){
-            return res.status(500).send("store doesn't existe");
+        for (let i = 0; i < storeIds.length; i++) {
+            const store = await Store.findByPk(storeIds[i]);
+            if(!store) {
+              return res.status(500).send("store doesn't existe");
+            }
         }
 
-        const category = await Category.create(req.body)
-        
-        res.status(200).send({ message:"category created" });
+        const category = await Category.create(req.body).then(async (category) => {
+            category.setStores(storeIds)
+          });
+
+          res.status(200).send({message:'category created'})
     } catch (error) {
         res.status(500).send({
             status:500,
@@ -60,15 +63,31 @@ exports.getCategoryById = async function (req,res){
 
 exports.updateCategory = async function(req,res){
     try {
-      const {categoryName,categoryId}=req.body
+      const {categoryName, storeIds}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      const category = await Category.findByPk(req.query.id)
   
-      await Category.update(req.body,{where:{id:req.query.id}});
+      await category.update({categoryName});
+
+      const currentStores = await Category.getStores()
+
+      const storesToRemove = currentStores.filter(
+      (p) => !storeIds.map((c) => c).includes(p.id)
+      );
+      const storesToAdd = storeIds.filter(
+      (c) => !currentStores.map((p) => p.id).includes(c)
+      );
+
+      await Promise.all(
+      storesToRemove.map(async (c) => await category.removeStores(c))
+      );
+      await Promise.all(storesToAdd.map(async (c) => await category.addStores(c)));
   
-        res.status(200).send({ message:"Category Updated" });
+      res.status(200).send({ message:"Category Updated" });
     } catch (error) {
       res.status(500).send({
         status:500,
@@ -79,6 +98,7 @@ exports.updateCategory = async function(req,res){
   }
 
   exports.deleteCategory = async function(req,res){
+    try{
     await Category.findByPk(req.query.id)
       .then(category => {
         if (!category) {
@@ -88,29 +108,56 @@ exports.updateCategory = async function(req,res){
           .then(() => res.status(200).send({ message: 'category deleted successfully' }));
       })
       .catch(error => res.status(400).send(error));
+
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
   };
 
   exports.getAllCategoryByStoreId= async function (req,res){
-    const categorys = await Category.findAll({where:{storeId:req.query.id}})
+    try{
+    const categorys = await Store.findByPk(req.query.id, { include: 'categories' });
     res.status(200).send(categorys)
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
   }
 
   exports.searchCategory = async function(req,res){
     try {
         const {categoryName,id} = req.query;
-  
         let query;
-        
         if ( categoryName ) {
-            query = await Category.findAll({
-                    where: {
-                      categoryName: { [Op.like]: `%${categoryName}%` } ,
-                      storeId:id
-                    }
-                });
+            query = await Store.findOne({  
+              where:{
+                id
+              },
+              include: [{
+              model: Category,
+                where: {
+                  categoryName: { [Op.like]: `%${categoryName}%` }
+                }
+            }]
+          }
+            );
         } else {
-            query = await Category.findAll({where:{storeId:id}});
+            query = await Store.findByPk(id, { include: 'categories' });
         }
+
+        if(!query)
+        query=[]
+        else{
+          query=query.categories
+        }
+
         res.status(200).send(query);
     } catch (error) {
         res.status(500).send({
