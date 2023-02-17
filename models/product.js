@@ -13,7 +13,6 @@ module.exports = (sequelize) => {
         stock: Sequelize.INTEGER,
         purchaseAmount: Sequelize.FLOAT,
         amoutSells: Sequelize.FLOAT,
-        sellerReference : Sequelize.STRING
     })
     return Product;
 }

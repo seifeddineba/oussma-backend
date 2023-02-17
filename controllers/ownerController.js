@@ -148,16 +148,33 @@ exports.updateOwner = async function(req,res){
 
 exports.getAllStoreAndStoreUserByOwnerId = async function (req,res){
   try {
-    const {id}= req.query
-    
-    const query = await Store.findAll({
+    const {id,storeId,fullName}= req.query
+
+    let option = {
       where:{
         ownerId:id
-      },
-      include:[{
-        model:StoreUser
+      }
+    }
+
+    if(storeId){
+      option.where = {
+        ...(storeId && {id:storeId})
+      }
+    
+    }
+    if(fullName){
+      option.include = [{
+        model:StoreUser,
+        include:[
+          {
+            model:User,
+            where:{fullName :{[Op.like]: `%${fullName}%`} }
+          }
+        ]
       }]
-    })
+    }
+
+    const query = await Store.findAll(option)
 
     res.status(200).send(query)
 

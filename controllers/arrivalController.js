@@ -13,7 +13,7 @@ const Vendor = db.vendor;
 
 exports.createArrival = async function (req,res){
     try {
-       const {productId,vendorId}= req.body
+       const {productId,vendorId,fileId}= req.body
 
        const result = validateArrival(req.body);
        if (result.error) {
@@ -31,6 +31,11 @@ exports.createArrival = async function (req,res){
       }  
 
        const arrival = await Arrival.create(req.body)
+
+       await File.findByPk(fileId)
+        .then(file => {
+          arrival.setFile(file);
+        });
         
        res.status(200).send({ message:"arrival created" });
     } catch (error) {

@@ -12,11 +12,11 @@ const Order = db.order;
 const Product = db.product;
 const OrderProduct = db.orderProduct;
 const Vendor = db.vendor
-const File = db.file
+const Tfile = db.file
 
 exports.createVendor = async function (req, res) {
     try {
-        const {storeIds,files}= req.body
+        const {storeIds}= req.body
 
         const result = validateVendor(req.body);
         if (result.error) {
@@ -30,14 +30,14 @@ exports.createVendor = async function (req, res) {
             }
         }
 
-        const fileName = await uploadFile(req.body.file)
+        //const fileName = await uploadFile(req.body.file)
 
         const vendor = await Vendor.create(req.body).then(async (vendor) => {
             vendor.setStores(storeIds)
-            vendor.createFile(fileName)
+            //vendor.createFile(fileName)
           });
         
-        res.status(200).send({ message:"vendor created" });
+        res.status(200).send({ message:"vendor created", vendorId:vendor.id });
     } catch (error) {
         res.status(500).send({
             status:500,
@@ -176,5 +176,36 @@ exports.updateVendor = async function(req,res){
             error:"server",
             message : error.message
         }); 
+    }
+  }
+
+
+  exports.addFileToVendor = async function (req,res){
+    try {
+      const {file,date,totalAmount,payedAmount,description,vendorId}= req.body
+
+      const vendor = await vendorId.findByPk(vendorId)
+      if(!vendor){
+        return res.status(500).send('vendor does not exist!')
+      }
+
+      const fileName = await uploadFile(file)
+
+      await File.create({
+        url :fileName,
+        date,
+        totalAmount,
+        payedAmount ,
+        description,
+        vendorId
+      })
+      
+      res.status(200).send({message:"file added"});
+
+    } catch (error) {
+      res.status(500).send({
+        error:"server",
+        message : error.message
+    }); 
     }
   }

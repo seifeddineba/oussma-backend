@@ -53,6 +53,9 @@ module.exports = function (app) {
     app.delete("/api/orderService/deleteOrder", auth, orderController.deleteOrder);
     app.get("/api/orderService/getAllOrderByStoreId", auth, orderController.getAllOrderByStoreId);
     app.get("/api/orderService/searchOrder", auth, orderController.searchOrder);
+    app.get("/api/orderService/searchPackage", auth, orderController.searchPackage);
+
+    
 
     //product
     app.post("/api/productService/createProduct", auth, productController.createProduct);
@@ -78,6 +81,8 @@ module.exports = function (app) {
     app.delete("/api/vendorService/deleteVendor", auth, vendorController.deleteVendor);
     app.get("/api/vendorService/getAllVendorByStoreId", auth, vendorController.getAllVendorByStoreId);
     app.get("/api/vendorService/searchVendor", auth, vendorController.searchVendor);
+    app.post("/api/vendorService/addFileToVendor", auth, vendorController.addFileToVendor);
+    
     
     //category
     app.post("/api/categoryService/createCategory", auth, categoryController.createCategory);

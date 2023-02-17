@@ -13,6 +13,7 @@ const Product = db.product;
 const Category = db.category
 const Vendor = db.vendor
 const File = db.file
+const Reference = db.reference
 
 
 
@@ -49,7 +50,15 @@ exports.createProduct = async function (req,res){
 
         const product = await Product.create(req.body).then(async (product) => {
             await product.setStores(storeIds)
-            await product.createReferences(references)
+
+            let data = arrayProductQuantity.map((item)=>{
+              return {...item,productId:product.id}
+            })
+            Reference.bulkCreate(data).then(async () => {
+                await transaction.commit();
+                res.status(200).send({ message:"order created" });
+              });
+
         });
 
         await product.update({fileId:file.id})
@@ -85,7 +94,7 @@ exports.getProductById = async function (req,res){
 exports.updateProduct = async function(req,res){
     try {
       const {name,productReference,quantityReleased,stock,
-        purchaseAmount,amoutSells,sellerReference,file,storeIds}=req.body
+        purchaseAmount,amoutSells,file,storeIds}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')

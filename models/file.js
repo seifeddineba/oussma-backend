@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
             primaryKey: true,
         },
        url: Sequelize.STRING,
+       date: Sequelize.DATE,
+       totalAmount: Sequelize.FLOAT,
+       payedAmount : Sequelize.FLOAT,
+       description: Sequelize.TEXT
     })
     return File;
 }

@@ -238,3 +238,33 @@ exports.updateOrder = async function(req,res){
         }); 
     }
   }
+
+  exports.searchPackage = async function(req,res){
+    try {
+        const {clientName,phoneNumber,id} = req.query;
+  
+        let query;
+        
+        if ( clientName || phoneNumber ) {
+            query = await Order.findAll({
+                    where: {
+                      clientName: { [Op.like]: `%${clientName}%` } ,
+                      phoneNumber: { [Op.like]: `%${phoneNumber}%` },
+                      orderStatus: {[Op.in]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']},
+                      storeId:id
+                    }
+                });
+        } else {
+            query = await Order.findAll({where:{
+                storeId:id,
+                orderStatus: {[Op.in]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
+            }});
+        }
+        res.status(200).send(query);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+  }

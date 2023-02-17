@@ -89,16 +89,16 @@ module.exports.validateProduct = function validateProduct(product){
         amoutSells: Joi.number().required(),
         storeIds: Joi.array().items(Joi.number()).required(),
         categoryId: Joi.number().required(),
-        sellerReference : Joi.string().required(),
+        //sellerReference : Joi.string().required(),
         name : Joi.string().required(),
         vendorId: Joi.number().required(),
         file: Joi.string().required(),
-        references:Joi.array().required(),
+        references:Joi.array().items(Joi.object({referenceId:Joi.number().required(),quantity: Joi.number().required()})).required(),
     })
     return schema.validate(product)
 }
 
-module.exports.validateArrival = function validateProduct(arrival){
+module.exports.validateArrival = function validateArrival(arrival){
     const schema = Joi.object().keys({
         quantity: Joi.number().required(),
         buyingPrice: Joi.number().required(),
@@ -106,7 +106,8 @@ module.exports.validateArrival = function validateProduct(arrival){
         facture: Joi.string().required(),
         arrivalDate: Joi.date().required(),
         productId: Joi.number().required(),
-        vendorId: Joi.number().required()
+        vendorId: Joi.number().required(),
+        fileId: Joi.number().required()
     })
     return schema.validate(arrival)
 }
@@ -119,7 +120,7 @@ module.exports.validateVendor = function validateVendor(vendor){
         phoneNumber: Joi.string().required(),
         note: Joi.string().required().allow(""),
         storeIds: Joi.array().items(Joi.number()).required(),
-        file: Joi.string().required(),
+        //file: Joi.string().required(),
     })
     return schema.validate(vendor)
 }

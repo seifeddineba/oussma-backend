@@ -281,6 +281,16 @@
             "name": "id",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "storeId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "fullName",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -966,6 +976,47 @@
         }
       }
     },
+    "/api/orderService/searchPackage": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "clientName",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/productService/createProduct": {
       "post": {
         "description": "",
@@ -1167,6 +1218,9 @@
                   "example": "any"
                 },
                 "vendorId": {
+                  "example": "any"
+                },
+                "fileId": {
                   "example": "any"
                 }
               }
@@ -1421,13 +1475,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "file": {
-                  "example": "any"
-                },
                 "storeIds": {
-                  "example": "any"
-                },
-                "files": {
                   "example": "any"
                 }
               }
@@ -1569,6 +1617,59 @@
             "name": "id",
             "in": "query",
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/vendorService/addFileToVendor": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "totalAmount": {
+                  "example": "any"
+                },
+                "payedAmount": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "vendorId": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
