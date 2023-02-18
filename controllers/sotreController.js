@@ -1,7 +1,7 @@
 const { owner } = require('../config/dbConfig');
 const db = require('../config/dbConfig');
 const {validateStore, isEmptyObject} = require('../models/validator');
-const { getUser, getUserSubscription } = require('./sharedFunctions');
+const { getUser, getUserSubscription, uploadFile } = require('./sharedFunctions');
 const { Op } = require('sequelize');
 
 const User = db.user;
@@ -45,6 +45,9 @@ exports.createStore = async function(req,res){
             if(!owner){
                 return res.status(500).send("owner doesn't existe");
             }
+
+            const fileName = await uploadFile(req.body.file)
+
             // create new store
             const store = await Store.create({
               storeName,
@@ -53,7 +56,7 @@ exports.createStore = async function(req,res){
               url,
               amount,
               payed,
-              logo,
+              logo:fileName,
               taxCode,
               ownerId: owner.id,
             });
@@ -87,11 +90,19 @@ exports.getStoreById = async function (req,res){
 exports.updateStore = async function(req,res){
   try {
 
+   
     if(isEmptyObject(req.body)){
       return res.status(400).send('All fields should not be empty')
     }
 
-    await Store.update(req.body,{where:{id:req.query.id}});
+    let data = req.body
+
+    if(req.body.logo){
+      const fileName =  await uploadFile(req.body.logo)
+      data.logo = fileName
+    }
+    
+    await Store.update(data,{where:{id:req.query.id}});
 
       res.status(200).send({ message:"Store Updated" });
   } catch (error) {

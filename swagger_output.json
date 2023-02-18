@@ -411,7 +411,40 @@
           {
             "name": "id",
             "in": "query",
-            "type": "string"
+            "type": "string "
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "storeName": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "url": {
+                  "example": "any"
+                },
+                "amount": {
+                  "example": "any"
+                },
+                "payed": {
+                  "example": "any"
+                },
+                "logo": {
+                  "example": "any"
+                },
+                "taxCode": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -647,6 +680,38 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fullName": {
+                  "example": "any"
+                },
+                "login": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "salary": {
+                  "example": "any"
+                },
+                "permissionType": {
+                  "example": "any"
+                },
+                "storeId": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {

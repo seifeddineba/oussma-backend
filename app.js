@@ -17,13 +17,13 @@ const swaggerUi = require('swagger-ui-express');
 const sequelize = new Sequelize('myshop', env.login, env.pwd, env);
 const swaggerFile = require('./swagger_output.json')
 
-// db.sequelize.sync({ alter: true })
-//   .then(() => {
-//     console.log('Tables created or refreshed successfully');
-//   })
-//   .catch((error) => {
-//     console.error('Error creating or refreshing tables:', error);
-//   });
+db.sequelize.sync({ alter: true })
+  .then(() => {
+    console.log('Tables created or refreshed successfully');
+  })
+  .catch((error) => {
+    console.error('Error creating or refreshing tables:', error);
+  });
 
 var corsOptions = {
   origin: 'http://localhost:3005',

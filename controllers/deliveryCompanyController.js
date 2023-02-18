@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateDeliveryCompany, isEmptyObject } = require('../models/validator');
 const { Op } = require('sequelize');
+const { uploadFile } = require('./sharedFunctions');
 
 const User = db.user;
 const Owner = db.owner;
@@ -28,8 +29,12 @@ exports.createDeliveryCompany = async function (req, res) {
               return res.status(500).send("store doesn't existe");
             }
         }
+        let data  = req.body
 
-        const deliveryCompany = await DeliveryCompany.create(req.body).then(async (deliveryCompany) => {
+        const fileName =  await uploadFile(req.body.logo)
+        data.logo = fileName
+
+        const deliveryCompany = await DeliveryCompany.create(data).then(async (deliveryCompany) => {
             deliveryCompany.setStores(storeIds)
           });
 
@@ -71,8 +76,15 @@ exports.updateDeliveryCompany = async function(req,res){
       }
 
       const deliveryCompany = await DeliveryCompany.findByPk(req.query.id)
+
+      let data  = req.body
+
+      if(logo){
+        const fileName =  await uploadFile(req.body.logo)
+        data.logo = fileName
+      }
   
-      await deliveryCompany.update(req.body);
+      await deliveryCompany.update(data);
 
       const currentStores = await DeliveryCompany.getStores()
 
