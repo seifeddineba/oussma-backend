@@ -56,7 +56,7 @@ exports.getChargeById = async function (req,res){
 
 exports.updateCharge = async function(req,res){
     try {
-      const {type,amount,note,chargeId}=req.body
+      const {type,amount,note,storeId}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')

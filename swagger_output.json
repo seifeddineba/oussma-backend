@@ -1107,16 +1107,34 @@
             "schema": {
               "type": "object",
               "properties": {
-                "file": {
+                "productReference": {
+                  "example": "any"
+                },
+                "quantityReleased": {
+                  "example": "any"
+                },
+                "stock": {
+                  "example": "any"
+                },
+                "purchaseAmount": {
+                  "example": "any"
+                },
+                "amoutSells": {
                   "example": "any"
                 },
                 "storeIds": {
                   "example": "any"
                 },
+                "categoryId": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
                 "vendorId": {
                   "example": "any"
                 },
-                "categoryId": {
+                "file": {
                   "example": "any"
                 },
                 "references": {
@@ -1150,6 +1168,11 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -1170,6 +1193,53 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "productReference": {
+                  "example": "any"
+                },
+                "quantityReleased": {
+                  "example": "any"
+                },
+                "stock": {
+                  "example": "any"
+                },
+                "purchaseAmount": {
+                  "example": "any"
+                },
+                "amoutSells": {
+                  "example": "any"
+                },
+                "storeIds": {
+                  "example": "any"
+                },
+                "categoryId": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "vendorId": {
+                  "example": "any"
+                },
+                "file": {
+                  "example": "any"
+                },
+                "references": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1289,6 +1359,21 @@
             "schema": {
               "type": "object",
               "properties": {
+                "quantity": {
+                  "example": "any"
+                },
+                "buyingPrice": {
+                  "example": "any"
+                },
+                "amount": {
+                  "example": "any"
+                },
+                "facture": {
+                  "example": "any"
+                },
+                "arrivalDate": {
+                  "example": "any"
+                },
                 "productId": {
                   "example": "any"
                 },
@@ -1550,6 +1635,18 @@
             "schema": {
               "type": "object",
               "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
                 "storeIds": {
                   "example": "any"
                 }
@@ -1581,6 +1678,11 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -1601,6 +1703,30 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
+                "storeIds": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1778,6 +1904,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "categoryName": {
+                  "example": "any"
+                },
                 "storeIds": {
                   "example": "any"
                 }
@@ -1809,6 +1938,11 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -1829,6 +1963,26 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "categoryName": {
+                  "example": "any"
+                },
+                "storeIds": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1948,6 +2102,30 @@
             "schema": {
               "type": "object",
               "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "deliveryPrice": {
+                  "example": "any"
+                },
+                "retourPrice": {
+                  "example": "any"
+                },
+                "logo": {
+                  "example": "any"
+                },
                 "storeIds": {
                   "example": "any"
                 }
@@ -1979,6 +2157,11 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -1999,6 +2182,47 @@
             "name": "x-auth",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "deliveryPrice": {
+                  "example": "any"
+                },
+                "retourPrice": {
+                  "example": "any"
+                },
+                "logo": {
+                  "example": "any"
+                },
+                "storeIds": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -2123,6 +2347,15 @@
             "schema": {
               "type": "object",
               "properties": {
+                "type": {
+                  "example": "any"
+                },
+                "amount": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
                 "storeId": {
                   "example": "any"
                 }
@@ -2206,7 +2439,7 @@
                 "note": {
                   "example": "any"
                 },
-                "chargeId": {
+                "storeId": {
                   "example": "any"
                 }
               }
@@ -2339,7 +2572,25 @@
             "schema": {
               "type": "object",
               "properties": {
+                "startDate": {
+                  "example": "any"
+                },
+                "endDate": {
+                  "example": "any"
+                },
+                "amountEuro": {
+                  "example": "any"
+                },
+                "amountDinar": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
                 "storeId": {
+                  "example": "any"
+                },
+                "name": {
                   "example": "any"
                 }
               }
@@ -2406,6 +2657,36 @@
             "name": "id",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "startDate": {
+                  "example": "any"
+                },
+                "endDate": {
+                  "example": "any"
+                },
+                "amountEuro": {
+                  "example": "any"
+                },
+                "amountDinar": {
+                  "example": "any"
+                },
+                "note": {
+                  "example": "any"
+                },
+                "storeId": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
