@@ -2,6 +2,7 @@ const db = require('../config/dbConfig');
 const {validateOwner, isEmptyObject} = require('../models/validator');
 const bcrypt = require('bcrypt');
 const { query } = require('express');
+const { Op } = require('sequelize');
 
 
 const User = db.user;
@@ -153,7 +154,19 @@ exports.getAllStoreAndStoreUserByOwnerId = async function (req,res){
     let option = {
       where:{
         ownerId:id
-      }
+      },
+      include : [
+        {
+          model:StoreUser,
+          include:[
+            {
+              model:User,
+              attributes: ['fullName','login'],
+              where:{fullName :{[Op.like]: `%${fullName}%`} }
+            }
+          ]
+        }
+      ]
     }
 
     if(storeId){
@@ -168,6 +181,7 @@ exports.getAllStoreAndStoreUserByOwnerId = async function (req,res){
         include:[
           {
             model:User,
+            attributes: ['fullName','login'],
             where:{fullName :{[Op.like]: `%${fullName}%`} }
           }
         ]

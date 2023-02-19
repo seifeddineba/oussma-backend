@@ -20,7 +20,7 @@ const Reference = db.reference
 exports.createProduct = async function (req,res){
     try {
 
-        const {storeIds,vendorId,categoryId,references}=req.body
+        const {storeIds,vendorId,categoryId}=req.body
 
         const result = validateProduct(req.body)
         if (result.error) {

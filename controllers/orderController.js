@@ -129,6 +129,7 @@ exports.updateOrder = async function(req,res){
 
         const order = await Order.findOne({where:{id:req.query.id},
             include:[{model:Product}]})
+            
             if(!order){
                 return res.status(500).send('order does not exist!')
             }
