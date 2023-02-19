@@ -84,15 +84,31 @@ module.exports.uploadFile = async function (data){
   const buffer = Buffer.from(base64Data, 'base64');
   const fileType = data.match(/^data:([A-Za-z-+/]+);base64/)[1];
   const fileExtension = mime.getExtension(fileType);
-  const fileName = +fileExtension
+  const randomString = await makeid()
+  const fileName = randomString+"."+fileExtension
   const filePath = path.join(__dirname, '../uploads/', fileName);
 
-  fs.writeFile(filePath, buffer, error => {
-    if (error) {
-      return ('Error saving file')
-    } else {
-      return fileName;
-    }
+ await fs.writeFile(filePath, buffer, error => {
+    // if (error) {
+    //   return ('Error saving file')
+    // } else {
+    //   return fileName;
+    // }
   });
+
+  return fileName;
+
 } 
 
+
+async function makeid() {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < 40) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}

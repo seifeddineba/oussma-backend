@@ -46,7 +46,7 @@ exports.createStore = async function(req,res){
                 return res.status(500).send("owner doesn't existe");
             }
 
-            const fileName = await uploadFile(req.body.file)
+            const fileName = await uploadFile(logo)
 
             // create new store
             const store = await Store.create({

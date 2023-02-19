@@ -113,10 +113,7 @@ exports.getStoreUserById = async function (req,res){
 
 exports.updateStoreUser = async function(req,res){
   try {
-    const {fullName,login,password,salary,permissionType}=req.body
-
-
-    console.log(isEmptyObject(req.body))
+    const {fullName,login,password,salary,permissionType,storeId}=req.body
 
     const data = req.body
     const { ["password"]: _, ...result } = data;
@@ -125,11 +122,17 @@ exports.updateStoreUser = async function(req,res){
       return res.status(400).send('All fields should not be empty')
     }
 
-    const existingLogin = User.findOne({where:{login:login}})
-
-    if(existingLogin){
-      return res.status(500).send('Login already in use !')
-    }
+    const existingUser = await User.findOne({ 
+      where: { login: login },
+      include:[{
+          model:StoreUser,
+          where:{
+              storeId
+          }}]
+      });
+  if (existingUser) {
+      return res.status(500).send('user login already in used');
+  }
 
     const user = await User.findOne({ where: { id: req.query.id } });
 

@@ -31,13 +31,15 @@ exports.createVendor = async function (req, res) {
         }
 
         //const fileName = await uploadFile(req.body.file)
-
-        const vendor = await Vendor.create(req.body).then(async (vendor) => {
-            vendor.setStores(storeIds)
+        let vendorId 
+        await Vendor.create(req.body).then(async (vendor) => {
+            vendorId = vendor.id
+            await vendor.setStores(storeIds)
             //vendor.createFile(fileName)
           });
+
         
-        res.status(200).send({ message:"vendor created", vendorId:vendor.id });
+        res.status(200).send({ message:"vendor created", vendorId});
     } catch (error) {
         res.status(500).send({
             status:500,

@@ -16,7 +16,7 @@ const DeliveryCompany = db.deliveryCompany
 
 exports.createDeliveryCompany = async function (req, res) {
     try {
-        const {storeIds}= req.body
+        const {storeIds,logo}= req.body
 
         const result = validateDeliveryCompany(req.body);
         if (result.error) {
@@ -29,12 +29,14 @@ exports.createDeliveryCompany = async function (req, res) {
               return res.status(500).send("store doesn't existe");
             }
         }
+
         let data  = req.body
 
-        const fileName =  await uploadFile(req.body.logo)
-        data.logo = fileName
+        const fileName =  await uploadFile(logo)
 
-        const deliveryCompany = await DeliveryCompany.create(data).then(async (deliveryCompany) => {
+        data.logo = fileName
+        
+        await DeliveryCompany.create(data).then(async (deliveryCompany) => {
             deliveryCompany.setStores(storeIds)
           });
 
@@ -170,17 +172,26 @@ exports.updateDeliveryCompany = async function(req,res){
           );
 
         } else {
-            query = await Store.findByPk(id, { include: 'deliveryCompanys' });
+            query = await Store.findOne({ where:{
+              id
+            },
+            include: [{
+              model: DeliveryCompany
+                }]
+            });
         }
 
         if(!query)
         query=[]
         else{
-          query=query.deliveryCompanys
+          query=query.deliveryCompanies
         }
 
         res.status(200).send(query);
     } catch (error) {
+
+      console.log(error
+        )
         res.status(500).send({
             error:"server",
             message : error.message
