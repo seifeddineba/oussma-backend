@@ -36,7 +36,7 @@ module.exports = function (app) {
     app.get("/api/storeService/getAllStoresByOwnerId", auth, storeContoller.getAllStoresByOwnerId);
     app.get("/api/storeService/searchStore", auth, storeContoller.searchStore);
     app.get("/api/storeService/getAllStoreForOwnerOrStoreUser", auth, storeContoller.getAllStoreForOwnerOrStoreUser);
-    
+    app.post("/api/storeService/getAllRelatedToStore", auth, storeContoller.getAllRelatedToStore);    
 
     // user
     app.post("/api/userService/createStoreUser", auth, storeUserController.createStoreUser);

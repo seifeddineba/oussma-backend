@@ -7,7 +7,7 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             primaryKey: true,
         },
-       refernce: Sequelize.STRING,
+       reference: Sequelize.STRING,
        quantity: Sequelize.INTEGER
     })
     return Reference;

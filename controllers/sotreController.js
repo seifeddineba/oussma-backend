@@ -8,7 +8,9 @@ const User = db.user;
 const Owner = db.owner;
 const Store = db.store;
 const StoreUser = db.storeUser;
-//const Permission = db.permission;
+const Category = db.category;
+const Vendor = db.vendor;
+const DeliveryCompany = db.deliveryCompany;
 
 exports.createStore = async function(req,res){
     try {
@@ -187,4 +189,30 @@ exports.getAllStoreForOwnerOrStoreUser = async function (req,res) {
   }); 
   }
 
+}
+
+exports.getAllRelatedToStore = async function (req,res) {
+  try{
+    
+    await Store.findAll({
+      where: {
+        id: {
+          [Op.in]: req.body.storeIds
+        } // Replace with the IDs of the stores you want to retrieve
+      },
+      include:[
+        {model: Vendor},
+        {model: Category},
+        {model: DeliveryCompany}
+      ]
+      
+    }).then(stores => {
+      res.status(200).send(stores);
+    });
+  } catch (error) {
+    res.status(500).send({
+      error:"server",
+      message : error.message
+    }); 
+  }
 }

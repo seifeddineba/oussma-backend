@@ -14,6 +14,7 @@ const Category = db.category
 const Vendor = db.vendor
 const File = db.file
 const Reference = db.reference
+const Arrival = db.arrival;
 
 
 
@@ -33,7 +34,7 @@ exports.createProduct = async function (req,res){
             return res.status(500).send("category doesn't existe");
         }
 
-        const vendor = Vendor.findOne({ where: { name: vendorId }})
+        const vendor = Vendor.findOne({ where: { id: vendorId }})
         if (!vendor) {
           return res.status(500).json({ message: 'Vendor not found' });
         }
@@ -76,7 +77,16 @@ exports.createProduct = async function (req,res){
 
 exports.getProductById = async function (req,res){
     try {
-        const product = await Product.findByPk(req.query.id)
+        const product = await Product.findOne({
+          where:{id:req.query.id},
+          include:[
+            {model: Arrival},
+            {model: Reference},
+            {model: File,
+              as: 'attachedFile'},
+            {model: Category}
+        ]
+        })
         if(!product){
             return res.status(500).send('product does not exist!')
         }

@@ -88,7 +88,7 @@ exports.updateDeliveryCompany = async function(req,res){
   
       await deliveryCompany.update(data);
 
-      const currentStores = await DeliveryCompany.getStores()
+      const currentStores = await deliveryCompany.getStores()
 
       const storesToRemove = currentStores.filter(
       (p) => !storeIds.map((c) => c).includes(p.id)
