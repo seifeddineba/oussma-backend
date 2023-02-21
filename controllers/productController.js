@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateProduct, isEmptyObject} = require('../models/validator');
 const { Op } = require('sequelize');
+const { uploadFile } = require('./sharedFunctions');
 
 
 const User = db.user;
