@@ -60,12 +60,11 @@ exports.createProduct = async function (req,res){
                 await transaction.commit();
                 res.status(200).send({ message:"order created" });
               });
-
+        await product.update({fileId:file.id})
+        res.status(200).send({ message:"product created" }); 
         });
 
-        await product.update({fileId:file.id})
         
-        res.status(200).send({ message:"product created" }); 
 
     } catch (error) {
         res.status(500).send({
