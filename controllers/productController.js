@@ -22,7 +22,7 @@ const Arrival = db.arrival;
 exports.createProduct = async function (req,res){
     try {
 
-        const {storeIds,vendorId,categoryId}=req.body
+        const {storeIds,vendorId,categoryId,references}=req.body
 
         const result = validateProduct(req.body)
         if (result.error) {
@@ -53,7 +53,7 @@ exports.createProduct = async function (req,res){
         const product = await Product.create(req.body).then(async (product) => {
             await product.setStores(storeIds)
 
-            let data = arrayProductQuantity.map((item)=>{
+            let data = references.map((item)=>{
               return {...item,productId:product.id}
             })
             Reference.bulkCreate(data).then(async () => {
