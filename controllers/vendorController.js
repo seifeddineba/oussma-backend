@@ -12,7 +12,7 @@ const Order = db.order;
 const Product = db.product;
 const OrderProduct = db.orderProduct;
 const Vendor = db.vendor
-const Tfile = db.file
+const File = db.file
 
 exports.createVendor = async function (req, res) {
     try {
