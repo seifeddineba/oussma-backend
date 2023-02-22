@@ -84,7 +84,8 @@ exports.getProductById = async function (req,res){
             {model: Reference},
             {model: File,
               as: 'attachedFile'},
-            {model: Category}
+            {model: Category},
+            {model: Store}
         ]
         })
         if(!product){
