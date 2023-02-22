@@ -52,7 +52,7 @@ exports.createVendor = async function (req, res) {
 
 exports.getVendorById = async function (req,res){
     try {
-        const vendor = await Vendor.findByPk(req.query.id)
+        const vendor = await Vendor.findOne({where: {id:req.query.id},include:[{modal:File}] })
         if(!vendor){
             return res.status(500).send('vendor does not exist!')
         }
