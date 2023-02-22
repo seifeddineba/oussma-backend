@@ -186,7 +186,7 @@ exports.updateVendor = async function(req,res){
     try {
       const {file,date,totalAmount,payedAmount,description,vendorId}= req.body
 
-      const vendor = await vendorId.findByPk(vendorId)
+      const vendor = await Vendor.findByPk(vendorId)
       if(!vendor){
         return res.status(500).send('vendor does not exist!')
       }
