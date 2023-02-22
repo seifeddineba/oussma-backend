@@ -90,7 +90,7 @@ module.exports.validateProduct = function validateProduct(product){
         storeIds: Joi.array().items(Joi.number()).required(),
         categoryId: Joi.number().required(),
         //sellerReference : Joi.string().required(),
-        name : Joi.string().required(),
+        // name : Joi.string().required(),
         vendorId: Joi.number().required(),
         file: Joi.string().required(),
         references:Joi.array().items(Joi.object({reference:Joi.string().required(),quantity: Joi.number().required()})).required(),
