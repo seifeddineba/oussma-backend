@@ -11,6 +11,7 @@ const Product = db.product;
 const Arrival = db.arrival;
 const Vendor = db.vendor;
 const Reference = db.reference;
+const File = db.file;
 
 exports.createArrival = async function (req,res){
     try {
