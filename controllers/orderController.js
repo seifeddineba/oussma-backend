@@ -119,39 +119,38 @@ exports.getOrderById = async function (req,res){
 
 exports.updateOrder = async function(req,res){
     try {
+        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
+            totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
+            ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
+
         const transaction = await db.sequelize.transaction();
 
+        
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
 
-      const currentReference = await product.getStores()
+        const order = await Order.findOne({where:{id:req.query.id},
+        include:[{model:Product}]})
 
-      const storesToRemove = currentReference.filter(
-      (p) => !storeIds.map((c) => c).includes(p.id)
+        if(!order){
+            return res.status(500).send('order does not exist!')
+        }
+
+      const currentReference = await order.getReferences()
+
+      const referenceToRemove = currentReference.filter(
+      (p) => !arrayReferenceQuantity.map((c) => c).includes(p.id)
       );
-      const storesToAdd = storeIds.filter(
+      const referenceToAdd = arrayReferenceQuantity.filter(
       (c) => !currentReference.map((p) => p.id).includes(c)
       );
 
       await Promise.all(
-      storesToRemove.map(async (c) => await product.removeStores(c))
+        referenceToRemove.map(async (c) => await order.removeReference(c))
       );
-      await Promise.all(storesToAdd.map(async (c) => await product.addStores(c)));
+      await Promise.all(referenceToAdd.map(async (c) => await product.addStores(c)));
 
-      
-       if (req.body.orderStatus){
-
-        const {orderStatus} = req.body
-
-        const order = await Order.findOne({where:{id:req.query.id},
-            include:[{model:Product,
-                include:[{model:Reference}]}
-                ]})
-            
-            if(!order){
-                return res.status(500).send('order does not exist!')
-            }
             
             if((order.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
@@ -199,7 +198,7 @@ exports.updateOrder = async function(req,res){
                 } 
     
             }
-        }
+        
 
         await Order.update(req.body,{where:{id:req.query.id}},{transaction});
         await transaction.commit()
