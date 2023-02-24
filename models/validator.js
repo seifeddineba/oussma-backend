@@ -71,7 +71,7 @@ module.exports.validateOrder = function validateOrder(order){
         exchangeReceipt: Joi.boolean().required(),
         note: Joi.string().required().allow(""),
         collectionDate: Joi.date().required(),
-        arrayProductQuantity: Joi.array().items(Joi.object({ productId: Joi.number().required(),referenceId:Joi.number().required(),quantity: Joi.number().required()})).required(),
+        arrayReferenceQuantity: Joi.array().items(Joi.object({referenceId:Joi.number().required(),quantity: Joi.number().required()})).required(),
         storeId: Joi.number().required(),
         deliveryCompanyId: Joi.number().required().allow(null),
         reduction: Joi.number().required().allow(null),

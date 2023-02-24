@@ -18,7 +18,7 @@ db.storeUser = require('../models/storeUser')(sequelize,Sequelize);
 db.subscription = require('../models/subscription')(sequelize,Sequelize);
 db.order = require('../models/order')(sequelize,Sequelize);
 db.product = require('../models/product')(sequelize,Sequelize);
-db.orderProduct = require('../models/order_Product')(sequelize,Sequelize);
+db.orderReference = require('../models/order_Reference')(sequelize,Sequelize);
 db.arrival = require('../models/arrival')(sequelize,Sequelize);
 db.vendor = require('../models/vendor')(sequelize,Sequelize);
 db.category = require('../models/category')(sequelize,Sequelize);
@@ -56,8 +56,8 @@ db.store.hasMany(db.order)
 db.order.belongsTo(db.store)
 
 // order has many product and product could be in may order
-db.order.belongsToMany(db.product, { through: 'orderProducts' });
-db.product.belongsToMany(db.order, { through: 'orderProducts' });
+db.order.belongsToMany(db.reference, { through: 'orderReferences' });
+db.reference.belongsToMany(db.order, { through: 'orderReferences' });
 
 // store has many product and the product could be in many stores
 db.store.belongsToMany(db.product, { through: 'storeProducts' });

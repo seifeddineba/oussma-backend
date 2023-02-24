@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize')
 
 module.exports = (sequelize) => {
-  const OrderProduct = sequelize.define('orderProducts', {
+  const OrderReference = sequelize.define('orderReferences', {
     quantity: Sequelize.INTEGER,
   },
   { timestamps: false })
 
-  return OrderProduct;
+  return OrderReference;
 }

@@ -872,7 +872,7 @@
                 "exchangeReceipt": {
                   "example": "any"
                 },
-                "arrayProductQuantity": {
+                "arrayReferenceQuantity": {
                   "example": "any"
                 },
                 "storeId": {

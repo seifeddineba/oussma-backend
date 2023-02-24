@@ -9,13 +9,13 @@ const StoreUser = db.storeUser;
 const Subscription = db.subscription;
 const Order = db.order;
 const Product = db.product;
-const OrderProduct = db.orderProduct
+const OrderReference = db.orderReference
 const Reference = db.reference
 
 exports.createOrder = async function (req, res) {
     try {
         const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
-            totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayProductQuantity
+            totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
         
@@ -33,30 +33,30 @@ exports.createOrder = async function (req, res) {
 
         const transaction = await db.sequelize.transaction();
 
-        for (let i = 0; i < arrayProductQuantity.length; i++) {
-            const product = await Product.findByPk(arrayProductQuantity[i].productId);
-            if(!product) {
-                return res.status(500).send({ error: 'product not found' });
-            }
+        for (let i = 0; i < arrayReferenceQuantity.length; i++) {
+            // const product = await Product.findByPk(arrayReferenceQuantity[i].productId);
+            // if(!product) {
+            //     return res.status(500).send({ error: 'product not found' });
+            // }
 
-            const reference = await Reference.findByPk(arrayProductQuantity[i].referenceId);
+            const reference = await Reference.findByPk(arrayReferenceQuantity[i].referenceId);
             if(!reference) {
                 return res.status(500).send({ error: 'reference not found' });
             }
 
             if(orderStatus || orderStatus!='ANNULÉ'){
-                if(product.stock < arrayProductQuantity[i].quantity) {
-                    return res.status(500).send({ error: 'product out of stock' });
-                }
-                product.stock -= arrayProductQuantity[i].quantity;
+                // if(product.stock < arrayReferenceQuantity[i].quantity) {
+                //     return res.status(500).send({ error: 'product out of stock' });
+                // }
+                // product.stock -= arrayReferenceQuantity[i].quantity;
 
-                if(reference.quantity < arrayProductQuantity[i].quantity) {
+                if(reference.quantity < arrayReferenceQuantity[i].quantity) {
                     return res.status(500).send({ error: 'product out of stock' });
                 }
-                reference.quantity -= arrayProductQuantity[i].quantity;
+                reference.quantity -= arrayReferenceQuantity[i].quantity;
             }
             await reference.save({transaction});
-            await product.save({transaction});
+            //await product.save({transaction});
         }
 
 
@@ -81,10 +81,11 @@ exports.createOrder = async function (req, res) {
             reduction,
             sponsorId
         },{transaction}).then(async (order) => {
-            let data = arrayProductQuantity.map((item)=>{
+            let data = arrayReferenceQuantity.map((item)=>{
                 return {...item,orderId:order.id}
             })
-            await OrderProduct.bulkCreate(data,{transaction})
+
+            await OrderReference.bulkCreate(data,{transaction})
           });
 
         await transaction.commit();
@@ -129,7 +130,9 @@ exports.updateOrder = async function(req,res){
         const {orderStatus} = req.body
 
         const order = await Order.findOne({where:{id:req.query.id},
-            include:[{model:Product}]})
+            include:[{model:Product,
+                include:[{model:Reference}]}
+                ]})
             
             if(!order){
                 return res.status(500).send('order does not exist!')
