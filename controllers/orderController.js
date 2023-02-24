@@ -124,6 +124,21 @@ exports.updateOrder = async function(req,res){
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      const currentReference = await product.getStores()
+
+      const storesToRemove = currentReference.filter(
+      (p) => !storeIds.map((c) => c).includes(p.id)
+      );
+      const storesToAdd = storeIds.filter(
+      (c) => !currentReference.map((p) => p.id).includes(c)
+      );
+
+      await Promise.all(
+      storesToRemove.map(async (c) => await product.removeStores(c))
+      );
+      await Promise.all(storesToAdd.map(async (c) => await product.addStores(c)));
+
       
        if (req.body.orderStatus){
 

@@ -100,7 +100,7 @@ module.exports.validateProduct = function validateProduct(product){
 
 module.exports.validateArrival = function validateArrival(arrival){
     const schema = Joi.object().keys({
-        referencesQuantity: Joi.array().items(Joi.object({reference:Joi.string().required(),quantity: Joi.number().required()})).required(),
+        referencesQuantity: Joi.array().items(Joi.object({referenceId:Joi.string().required(),quantity: Joi.number().required()})).required(),
         buyingPrice: Joi.number().required(),
         amount: Joi.number().required(),
         facture: Joi.string().required(),
