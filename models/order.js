@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
         gain: Sequelize.FLOAT,
         orderStatus:  {
             type: Sequelize.ENUM,
-            values: ['', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
+            values: ['', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ','EN ATTENTE',
             'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
             'RETOUR PAYÉ','LIVRÉ','PAYÉ','CONFIRMÉ/ARTICLE NON DISPONIBLE', 'PAS DE RÉPONSE']
         },

@@ -64,7 +64,7 @@ module.exports.validateOrder = function validateOrder(order){
         sellPrice: Joi.number().required(),
         totalAmount: Joi.number().required(),
         //gain: Joi.number().required(),
-        orderStatus: Joi.string().valid('', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
+        orderStatus: Joi.string().valid('', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ','EN ATTENTE',
         'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
         'RETOUR PAYÉ','LIVRÉ','PAYÉ','CONFIRMÉ/ARTICLE NON DISPONIBLE','PAS DE RÉPONSE').required(),
         exchange: Joi.boolean().required(),
@@ -100,7 +100,7 @@ module.exports.validateProduct = function validateProduct(product){
 
 module.exports.validateArrival = function validateArrival(arrival){
     const schema = Joi.object().keys({
-        quantity: Joi.number().required(),
+        referencesQuantity: Joi.array().items(Joi.object({reference:Joi.string().required(),quantity: Joi.number().required()})).required(),
         buyingPrice: Joi.number().required(),
         amount: Joi.number().required(),
         facture: Joi.string().required(),
