@@ -138,7 +138,7 @@ exports.updateDeliveryCompany = async function(req,res){
 
   exports.getAllDeliveryCompanyByStoreId= async function (req,res){
     try{
-    const deliveryCompanys = await Store.findByPk(req.query.id, { include: [{module:DeliveryCompany}] });
+    const deliveryCompanys = await Store.findByPk(req.query.id, { include: [{model:DeliveryCompany}] });
     res.status(200).send(deliveryCompanys)
     } catch (error) {
       res.status(500).send({
