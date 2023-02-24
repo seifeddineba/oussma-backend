@@ -10,10 +10,11 @@ const Subscription = db.subscription;
 const Product = db.product;
 const Arrival = db.arrival;
 const Vendor = db.vendor;
+const Reference = db.reference;
 
 exports.createArrival = async function (req,res){
     try {
-       const {productId,vendorId,fileId}= req.body
+       const {productId,vendorId,fileId,referencesQuantity}= req.body
 
        const result = validateArrival(req.body);
        if (result.error) {
@@ -29,15 +30,28 @@ exports.createArrival = async function (req,res){
        if(!vendor){
         return res.status(500).send("vendor doesn't existe");
       }  
+      const transaction = await db.sequelize.transaction();
 
-       const arrival = await Arrival.create(req.body)
+      for (let i = 0; i < referencesQuantity.length; i++) {
+        const reference = await Reference.findOne(referencesQuantity[i].referenceId)
+        if(!reference){
+            return res.status(500).send("reference doesn't existe");
+        }
+        reference.quantity+=referencesQuantity[i].quantity
+        await reference.save({transaction})
+      }
+
+       const arrival = await Arrival.create(req.body,{transaction})
 
        await File.findByPk(fileId)
         .then(file => {
-          arrival.setFile(file);
+          arrival.setFile(file,{transaction});
         });
-        
+
+        await transaction.commit();
+
        res.status(200).send({ message:"arrival created" });
+
     } catch (error) {
         res.status(500).send({
             status:500,
