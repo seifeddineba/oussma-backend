@@ -177,11 +177,12 @@ exports.updateProduct = async function(req,res){
   
   exports.searchProduct = async function(req,res){
     try {
-        const {productReference,id} = req.query;
+        const {productReference,categoryId,id} = req.query;
   
         let query;
+
         
-        if ( productReference ) {
+        if ( productReference || categoryId) {
             query = await Store.findOne({  
               where:{
                 id
@@ -190,12 +191,29 @@ exports.updateProduct = async function(req,res){
               model: Product,
                 where: {
                   productReference: { [Op.like]: `%${productReference}%` } ,
+                },
+                include: [
+                  {model: Reference},
+                  {model: File,
+                    as: 'attachedFile'},
+                  {model: Category,
+                    where: {id:categoryId??null}}
+                  ]
                 }
-                }]
+              ]
               }
             );
         } else {
-            query = await Store.findByPk(id, { include: 'products' });
+            query = await Store.findByPk(id, {  include: [{
+              model: Product,
+                include: [
+                  {model: Reference},
+                  {model: File,
+                    as: 'attachedFile'},
+                  {model: Category}
+                  ]
+                }
+              ] });
         }
 
         if(!query)

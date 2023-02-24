@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
             type: Sequelize.ENUM,
             values: ['', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
             'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
-            'RETOUR PAYÉ','LIVRÉ','PAYÉ']
+            'RETOUR PAYÉ','LIVRÉ','PAYÉ','CONFIRMÉ/ARTICLE NON DISPONIBLE', 'PAS DE RÉPONSE']
         },
         reduction: Sequelize.FLOAT,
         exchange: Sequelize.BOOLEAN,

@@ -84,11 +84,12 @@ exports.createOrder = async function (req, res) {
             let data = arrayProductQuantity.map((item)=>{
                 return {...item,orderId:order.id}
             })
-            OrderProduct.bulkCreate(data).then(async () => {
-                await transaction.commit();
-                res.status(200).send({ message:"order created" });
-              });
+            await OrderProduct.bulkCreate(data,{transaction})
           });
+
+        await transaction.commit();
+
+        res.status(200).send({ message:"order created" });
     } catch (error) {
         res.status(500).send({
             status:500,

@@ -66,7 +66,7 @@ module.exports.validateOrder = function validateOrder(order){
         //gain: Joi.number().required(),
         orderStatus: Joi.string().valid('', 'ANNULÉ', 'CONFIRMÉ','EMBALLÉ',
         'PRÊT','EN COURS','RETOUR','RETOUR REÇU',
-        'RETOUR PAYÉ','LIVRÉ','PAYÉ').required(),
+        'RETOUR PAYÉ','LIVRÉ','PAYÉ','CONFIRMÉ/ARTICLE NON DISPONIBLE','PAS DE RÉPONSE').required(),
         exchange: Joi.boolean().required(),
         exchangeReceipt: Joi.boolean().required(),
         note: Joi.string().required().allow(""),
