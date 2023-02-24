@@ -33,7 +33,7 @@ exports.createArrival = async function (req,res){
       const transaction = await db.sequelize.transaction();
 
       for (let i = 0; i < referencesQuantity.length; i++) {
-        const reference = await Reference.findOne(referencesQuantity[i].referenceId)
+        const reference = await Reference.findByPk(referencesQuantity[i].referenceId)
         if(!reference){
             return res.status(500).send("reference doesn't existe");
         }

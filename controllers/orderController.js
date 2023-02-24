@@ -151,6 +151,43 @@ exports.updateOrder = async function(req,res){
       );
       await Promise.all(referenceToAdd.map(async (c) => await product.addStores(c)));
 
+
+    // Get the current products in the order
+    const currentProducts = await order.getReferences();
+
+    // Find the products to add and update
+    const productsToAddOrUpdate = products.map(product => {
+      const existingProduct = currentProducts.find(p => p.id === product.id);
+      if (existingProduct) {
+        // If the product already exists in the order, update its quantity
+        return {
+          id: existingProduct.id,
+          orderProducts: {
+            quantity: product.quantity
+          }
+        };
+      } else {
+        // If the product is new to the order, add it with the given quantity
+        return {
+          id: product.id,
+          orderProducts: {
+            quantity: product.quantity
+          }
+        };
+      }
+    });
+
+    // Find the product IDs to delete
+    const productIdsToDelete = currentProducts.filter(product => {
+      return !products.some(p => p.id === product.id);
+    }).map(product => product.id);
+
+    // Update the order's products and quantities
+    await order.addProducts(productsToAddOrUpdate);
+    if (productIdsToDelete.length > 0) {
+      await order.removeProducts(productIdsToDelete);
+    }
+
             
             if((order.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
