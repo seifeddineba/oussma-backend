@@ -12,7 +12,8 @@ module.exports = (sequelize) => {
         values: ['REÇU', 'EFFECTUÉ']
     },
     amount: Sequelize.FLOAT,
-    note: Sequelize.TEXT
+    note: Sequelize.TEXT,
+    date: Sequelize.DATE,
   }, {
     timestamps: true,
     createdAt: 'created_at',

@@ -54,6 +54,9 @@ module.exports = function (app) {
     app.get("/api/orderService/getAllOrderByStoreId", auth, orderController.getAllOrderByStoreId);
     app.get("/api/orderService/searchOrder", auth, orderController.searchOrder);
     app.get("/api/orderService/searchPackage", auth, orderController.searchPackage);
+    app.delete("/api/orderService/DeleteMultipleOrders", auth, orderController.DeleteMultipleOrders);
+    app.put("/api/orderService/UpdateStatusForMultipleOrders", auth, orderController.UpdateStatusForMultipleOrders);
+    
 
     
 

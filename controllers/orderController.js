@@ -332,3 +332,37 @@ exports.updateOrder = async function(req,res){
         }); 
     }
   }
+
+
+  exports.DeleteMultipleOrders = async function(req,res){
+    try{  
+        const { orderIds } = req.body; 
+        await Order.destroy({ where: { id: { [Op.in]: orderIds } } }) // delete products matching the specified IDs
+        .then((result) => {
+            res.status(200).json({ message: 'Products deleted successfully.' });
+        })
+
+  } catch (error) {
+    res.status(500).send({
+        error:"server",
+        message : error.message
+    }); 
+}
+}
+
+exports.UpdateStatusForMultipleOrders = async function(req,res){
+    try{  
+        const { orderIds, status } = req.body; 
+
+        await Order.update({ orderStatus:status },{ where: { id: { [Op.in]: orderIds  } } }) // delete products matching the specified IDs
+        .then((result) => {
+            res.status(200).json({ message: 'Products deleted successfully.' });
+        })
+
+  } catch (error) {
+    res.status(500).send({
+        error:"server",
+        message : error.message
+    }); 
+}
+}
