@@ -132,15 +132,16 @@ exports.updateProduct = async function(req,res){
 
     // Find the products to add and update
     const referenceToAddOrUpdate =  await Promise.all(references.map(async (element) => {
-        const reference = await Reference.findByPk(element.referenceId)
-        if(!reference) {
-            return res.status(500).send({ error: 'reference not found' });
-        }
-      const existingReference = await currentReferences.find(f => f.id === element.referenceId);
-      if (existingReference) {
+      console.log("---------------------",element.referenceId)
+        const reference = await Reference.findOne({where:{id:element.referenceId}})
+        // if(!reference) {
+        //     return res.status(500).send({ error: 'reference not found' });
+        // }
+      //const existingReference = await currentReferences.find(f => f.id === element.referenceId);
+      if (reference) {
         // If the Reference already exists in the order, update its quantity
         return {
-            id: existingReference.id,
+            id: element.referenceId,
             reference:element.reference,
             quantity: element.quantity,
             productId:  product.id
@@ -148,7 +149,6 @@ exports.updateProduct = async function(req,res){
       } else {
         // If the product is new to the order, add it with the given quantity
         return {
-            id: element.referenceId,
             reference:element.reference,
             quantity: element.quantity,
             productId:  product.id
