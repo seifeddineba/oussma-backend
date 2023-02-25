@@ -11,6 +11,8 @@ const Order = db.order;
 const Product = db.product;
 const OrderReference = db.orderReference
 const Reference = db.reference
+const DeliveryCompany = db.deliveryCompany
+const Sponsor = db.sponsor
 
 exports.createOrder = async function (req, res) {
     try {
@@ -103,7 +105,15 @@ exports.createOrder = async function (req, res) {
 
 exports.getOrderById = async function (req,res){
     try {
-        const order = await Order.findByPk(req.query.id)
+        const order = await Order.findOne({
+            where:{id:req.query.id},
+            include:[{model:Reference,
+                    include:[{model:Product}]},
+                {model:Store},
+                {model:DeliveryCompany},
+                {model:Sponsor}]
+        })
+
         if(!order){
             return res.status(500).send('order does not exist!')
         }
@@ -125,113 +135,111 @@ exports.updateOrder = async function(req,res){
 
         const transaction = await db.sequelize.transaction();
 
-        
-      if(isEmptyObject(req.body)){
-        return res.status(400).send('All fields should not be empty')
-      }
-
         const order = await Order.findOne({where:{id:req.query.id},
-        include:[{model:Product}]})
+        include:[{model:Reference}]})
 
         if(!order){
             return res.status(500).send('order does not exist!')
         }
 
-      const currentReference = await order.getReferences()
-
-      const referenceToRemove = currentReference.filter(
-      (p) => !arrayReferenceQuantity.map((c) => c).includes(p.id)
-      );
-      const referenceToAdd = arrayReferenceQuantity.filter(
-      (c) => !currentReference.map((p) => p.id).includes(c)
-      );
-
-      await Promise.all(
-        referenceToRemove.map(async (c) => await order.removeReference(c))
-      );
-      await Promise.all(referenceToAdd.map(async (c) => await product.addStores(c)));
-
-
     // Get the current products in the order
-    const currentProducts = await order.getReferences();
+    const currentReferences = await order.getReferences();
 
     // Find the products to add and update
-    const productsToAddOrUpdate = products.map(product => {
-      const existingProduct = currentProducts.find(p => p.id === product.id);
-      if (existingProduct) {
-        // If the product already exists in the order, update its quantity
+    const referenceToAddOrUpdate =  await Promise.all(arrayReferenceQuantity.map(async (element) => {
+        const reference = await Reference.findByPk(element.referenceId)
+        if(!reference) {
+            return res.status(500).send({ error: 'reference not found' });
+        }
+
+        if(reference.quantity < element.quantity) {
+            return res.status(500).send({ error: `reference ${element.referenceId} out of stock` });
+        }
+      const existingReference = await currentReferences.find(f => f.id === element.referenceId);
+      if (existingReference) {
+        // If the Reference already exists in the order, update its quantity
         return {
-          id: existingProduct.id,
-          orderProducts: {
-            quantity: product.quantity
-          }
+            referenceId: existingReference.id,
+          orderId:order.id,
+            quantity: element.quantity
+       
         };
       } else {
         // If the product is new to the order, add it with the given quantity
         return {
-          id: product.id,
-          orderProducts: {
-            quantity: product.quantity
-          }
+            referenceId: element.referenceId,
+            orderId:order.id,
+            quantity: element.quantity
+          
         };
       }
-    });
+    }));
+
 
     // Find the product IDs to delete
-    const productIdsToDelete = currentProducts.filter(product => {
-      return !products.some(p => p.id === product.id);
-    }).map(product => product.id);
-
+    const referenceIdsToDelete = currentReferences.filter(
+        (p) => !arrayReferenceQuantity.map((c) => c.referenceId).includes(p.id)
+        );
     // Update the order's products and quantities
-    await order.addProducts(productsToAddOrUpdate);
-    if (productIdsToDelete.length > 0) {
-      await order.removeProducts(productIdsToDelete);
+    //await order.addReferences(referenceToAddOrUpdate);
+    const updateOnDuplicate = ['quantity'];
+    await OrderReference.bulkCreate(referenceToAddOrUpdate, { updateOnDuplicate });
+    if (referenceIdsToDelete.length > 0) {
+      await order.removeReferences(referenceIdsToDelete);
     }
 
             
             if((order.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
             {
-                for (let i = 0; i < order.products.length; i++) {
-                    const product = await Product.findByPk(order.products[i].id);
-                    if(!product) {
-                        return res.status(500).send({ error: 'product not found' });
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
                     }
+
                     // Subtract the quantity ordered from the stock
-                    if(product.stock < order.products[i].orderProducts.quantity) {
-                        return res.status(500).send({ error: 'product out of stock' });
-                    }
-                    product.stock -= order.products[i].orderProducts.quantity;
-                    await product.save({transaction});
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    reference.quantity -= order.references[i].orderProducts.quantity;
+                    await reference.save({transaction});
                 } 
             }
             
             else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') && (orderStatus=='ANNULÉ' ))//+1
             {
-                for (let i = 0; i < order.products.length; i++) {
-                    const product = await Product.findByPk(order.products[i].id);
-                    if(!product) {
-                        return res.status(500).send({ error: 'product not found' });
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
                     }
-                    // ADD the quantity ordered fro the stock
-            
-                    product.stock += order.products[i].orderProducts.quantity;
-                    await product.save({transaction});
+
+                    // Subtract the quantity ordered from the stock
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    reference.quantity += order.references[i].orderProducts.quantity;
+                    await reference.save({transaction});
                 } 
     
             }
 
             else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
             {
-                for (let i = 0; i < order.products.length; i++) {
-                    const product = await Product.findByPk(order.products[i].id);
-                    if(!product) {
-                        return res.status(500).send({ error: 'product not found' });
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
                     }
-                    // ADD the quantity ordered fro the stock
-                    product.stock += order.products[i].orderProducts.quantity;
-                    await product.save({transaction});
+
+                    // Subtract the quantity ordered from the stock
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    reference.quantity += order.references[i].orderProducts.quantity;
+                    await reference.save({transaction});
                 } 
     
             }

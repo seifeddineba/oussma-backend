@@ -105,15 +105,13 @@ exports.getProductById = async function (req,res){
 exports.updateProduct = async function(req,res){
     try {
       const {name,productReference,quantityReleased,stock,
-        purchaseAmount,amoutSells,file,storeIds}=req.body
+        purchaseAmount,amoutSells,file,storeIds,references}=req.body
   
-      if(isEmptyObject(req.body)){
-        return res.status(400).send('All fields should not be empty')
-      }
+      // if(isEmptyObject(req.body)){
+      //   return res.status(400).send('All fields should not be empty')
+      // }
 
       const product = await Product.findByPk(req.query.id)
-  
-      await product.update(req.body);
 
       const currentStores = await product.getStores()
 
@@ -129,9 +127,62 @@ exports.updateProduct = async function(req,res){
       );
       await Promise.all(storesToAdd.map(async (c) => await product.addStores(c)));
   
-      await product.update(req.body,{where:{id:req.query.id}});
+       // Get the current products in the order
+    const currentReferences = await product.getReferences();
+
+    // Find the products to add and update
+    const referenceToAddOrUpdate =  await Promise.all(references.map(async (element) => {
+        const reference = await Reference.findByPk(element.referenceId)
+        if(!reference) {
+            return res.status(500).send({ error: 'reference not found' });
+        }
+      const existingReference = await currentReferences.find(f => f.id === element.referenceId);
+      if (existingReference) {
+        // If the Reference already exists in the order, update its quantity
+        return {
+            id: existingReference.id,
+            reference:element.reference,
+            quantity: element.quantity,
+            productId:  product.id
+        };
+      } else {
+        // If the product is new to the order, add it with the given quantity
+        return {
+            id: element.referenceId,
+            reference:element.reference,
+            quantity: element.quantity,
+            productId:  product.id
+        };
+      }
+    }));
+    
+
+    // Find the product IDs to delete
+    const referenceIdsToDelete = currentReferences.filter(
+        (p) => !references.map((c) => c.referenceId).includes(p.id)
+        );
+
+    // Update the order's products and quantities
+    //await order.addReferences(referenceToAddOrUpdate);
+    console.log(referenceToAddOrUpdate)
+    const updateOnDuplicate = ['quantity','reference'];
+    await Reference.bulkCreate(referenceToAddOrUpdate, { updateOnDuplicate });
+    if (referenceIdsToDelete.length > 0) {
+      await product.removeReferences(referenceIdsToDelete);
+    }
+
+    if(file){
+      const fileName = await uploadFile(file)
+      const createdFile = await File.create({url : fileName})
+      await product.update({fileId:createdFile.id})
+    }
+    
+
+    await product.update(req.body,{where:{id:req.query.id}});
   
       res.status(200).send({ message:"product Updated" });
+
+
     } catch (error) {
       res.status(500).send({
         status:500,

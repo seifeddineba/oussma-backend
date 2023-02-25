@@ -2,7 +2,7 @@ const mysql2 = require('mysql2');
 
 const env = {
     login:'root',
-    pwd:'rahma',  //rahma
+    pwd:'',  //rahma
     host: 'localhost',
     dialect: 'mysql',
     pool: {
