@@ -115,6 +115,11 @@ db.deliveryCompany.belongsToMany(db.store,{ through: 'storeDeliveryCompanys' });
 db.store.hasMany(db.charge);
 db.charge.belongsTo(db.store);
 
+//charge has vendor
+db.charge.belongsTo(db.vendor);
+// charge has deliverycompany
+db.charge.belongsTo(db.deliveryCompany);
+
 //store hasmany sponsor
 db.store.hasMany(db.sponsor);
 db.sponsor.belongsTo(db.store);

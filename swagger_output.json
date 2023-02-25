@@ -2358,6 +2358,19 @@
                 },
                 "storeId": {
                   "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "chargeType": {
+                  "example": "PAYMENT , CHARGE , ACHAT"
+                },
+                "deliveryCompanyId": {
+                  "example": "any"
+                }
+                ,
+                "vendorId": {
+                  "example": "any"
                 }
               }
             }

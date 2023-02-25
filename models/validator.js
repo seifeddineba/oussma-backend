@@ -151,12 +151,14 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
 
 module.exports.validateCharge = function validateCharge(charge){
     const schema = Joi.object().keys({
-        chargeType: Joi.string().valid('PAYMENT', 'CHARGE').required(),
+        chargeType: Joi.string().valid('PAYMENT', 'CHARGE','ACHAT').required(),
         type: Joi.string().valid('REÇU', 'EFFECTUÉ').required(),
         amount: Joi.number().required(),
         note: Joi.string().required().allow(""),
         storeId: Joi.number().required(),
         date: Joi.date().required(),
+        vendorId: Joi.number().optional(),
+        deliveryCompanyId: Joi.number().optional(),
     })
     return schema.validate(charge)
 }

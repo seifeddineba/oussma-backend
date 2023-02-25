@@ -11,6 +11,7 @@ const Product = db.product;
 const Arrival = db.arrival;
 const Vendor = db.vendor;
 const Charge = db.charge;
+const DeliveryCompany = db.deliveryCompany;
 
 exports.createCharge = async function (req,res){
     try {
@@ -40,7 +41,10 @@ exports.createCharge = async function (req,res){
 
 exports.getChargeById = async function (req,res){
     try {
-        const charge = await Charge.findByPk(req.query.id)
+        const charge = await Charge.findOne({
+          where:{id : req.query.id},
+          include:[{model:Vendor},{model:DeliveryCompany}]
+      })
         if(!charge){
             return res.status(500).send('charge does not exist!')
         }
@@ -102,10 +106,11 @@ exports.updateCharge = async function(req,res){
                     where: {
                       type: { [Op.like]: `%${type}%` } ,
                       storeId:id
-                    }
+                    },
+                    include:[{model:Vendor},{model:DeliveryCompany}]
                 });
         } else {
-            query = await Charge.findAll({where:{storeId:id}});
+            query = await Charge.findAll({where:{storeId:id},include:[{model:Vendor},{model:DeliveryCompany}]});
         }
         res.status(200).send(query);
     } catch (error) {

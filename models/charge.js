@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
         autoIncrement: true,
         primaryKey: true,
     },
+    chargeType: {
+      type: Sequelize.ENUM,
+      values: ['PAYMENT', 'CHARGE','ACHAT']
+    },
     type: {
         type: Sequelize.ENUM,
         values: ['REÇU', 'EFFECTUÉ']
