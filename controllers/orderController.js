@@ -279,15 +279,16 @@ exports.updateOrder = async function(req,res){
 
   exports.searchOrder = async function(req,res){
     try {
-        const {clientName,phoneNumber,id} = req.query;
+        const {clientName,phoneNumber,id,orderStatus} = req.query;
   
         let query;
         
-        if ( clientName || phoneNumber ) {
+        if ( clientName || phoneNumber || orderStatus ) {
             query = await Order.findAll({
                     where: {
                       clientName: { [Op.like]: `%${clientName}%` } ,
                       phoneNumber: { [Op.like]: `%${phoneNumber}%` },
+                      orderStatus: { [Op.like]: `%${orderStatus}%` },
                       storeId:id
                     }
                 });
