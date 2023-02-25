@@ -57,7 +57,7 @@ exports.createProduct = async function (req,res){
               return {...item,productId:product.id}
             })
             Reference.bulkCreate(data).then(async () => {
-                await transaction.commit();
+                // await transaction.commit();
                 res.status(200).send({ message:"order created" });
               });
         await product.update({fileId:file.id})
