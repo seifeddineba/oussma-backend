@@ -56,9 +56,17 @@ exports.createOrder = async function (req, res) {
                     return res.status(500).send({ error: 'product out of stock' });
                 }
                 reference.quantity -= arrayReferenceQuantity[i].quantity;
+
+                const product = await Product.findByPk(reference.productId)
+                if(!product) {
+                    return res.status(500).send({ error: 'product not found' });
+                }
+                product.quantity -= arrayReferenceQuantity[i].quantity;
+                await product.save({transaction});
+                await reference.save({transaction});
             }
-            await reference.save({transaction});
-            //await product.save({transaction});
+            
+            //
         }
 
 
@@ -188,12 +196,15 @@ exports.updateOrder = async function(req,res){
       await order.removeReferences(referenceIdsToDelete);
     }
 
+    const updatedOrder = await Order.findOne({where:{id:req.query.id},
+        include:[{model:Reference}]})
+
             
-            if((order.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
+            if((updatedOrder.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
             {
-                for (let i = 0; i < order.references.length; i++) {
-                    const reference = await Reference.findByPk(order.references[i].id);
+                for (let i = 0; i < updatedOrder.references.length; i++) {
+                    const reference = await Reference.findByPk(updatedOrder.references[i].id);
                     if(!reference) {
                         return res.status(500).send({ error: 'reference not found' });
                     }
@@ -202,16 +213,23 @@ exports.updateOrder = async function(req,res){
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity -= order.references[i].orderProducts.quantity;
+                    reference.quantity -= updatedOrder.references[i].orderProducts.quantity;
+                    //await reference.save({transaction});
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.quantity -= arrayReferenceQuantity[i].quantity;
+                    await product.save({transaction});
                     await reference.save({transaction});
-                } 
+                    } 
             }
             
-            else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
+            else if(updatedOrder.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') && (orderStatus=='ANNULÉ' ))//+1
             {
-                for (let i = 0; i < order.references.length; i++) {
-                    const reference = await Reference.findByPk(order.references[i].id);
+                for (let i = 0; i < updatedOrder.references.length; i++) {
+                    const reference = await Reference.findByPk(updatedOrder.references[i].id);
                     if(!reference) {
                         return res.status(500).send({ error: 'reference not found' });
                     }
@@ -220,16 +238,23 @@ exports.updateOrder = async function(req,res){
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity += order.references[i].orderProducts.quantity;
+                    reference.quantity += updatedOrder.references[i].orderProducts.quantity;
+
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.quantity += arrayReferenceQuantity[i].quantity;
+                    await product.save({transaction});
                     await reference.save({transaction});
                 } 
     
             }
 
-            else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
+            else if(updatedOrder.orderStatus==('RETOUR'||'RETOUR REÇU')&&updatedOrder.exchangeReceipt&&updatedOrder.exchange)//+1
             {
-                for (let i = 0; i < order.references.length; i++) {
-                    const reference = await Reference.findByPk(order.references[i].id);
+                for (let i = 0; i < updatedOrder.references.length; i++) {
+                    const reference = await Reference.findByPk(updatedOrder.references[i].id);
                     if(!reference) {
                         return res.status(500).send({ error: 'reference not found' });
                     }
@@ -238,7 +263,15 @@ exports.updateOrder = async function(req,res){
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity += order.references[i].orderProducts.quantity;
+                    reference.quantity += updatedOrder.references[i].orderProducts.quantity;
+                    //await reference.save({transaction});
+
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.quantity += arrayReferenceQuantity[i].quantity;
+                    await product.save({transaction});
                     await reference.save({transaction});
                 } 
     
