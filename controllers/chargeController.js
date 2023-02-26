@@ -97,14 +97,15 @@ exports.updateCharge = async function(req,res){
 
   exports.searchCharge = async function(req,res){
     try {
-        const {type,id} = req.query;
+        const {type,chargeType,id} = req.query;
   
         let query;
         
-        if ( type ) {
+        if ( type || chargeType) {
             query = await Charge.findAll({
                     where: {
                       type: { [Op.like]: `%${type}%` } ,
+                      chargeType : { [Op.like]: `%${chargeType}%` } ,
                       storeId:id
                     },
                     include:[{model:Vendor},{model:DeliveryCompany}]
