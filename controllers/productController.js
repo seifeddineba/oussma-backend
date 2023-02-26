@@ -80,7 +80,8 @@ exports.getProductById = async function (req,res){
         const product = await Product.findOne({
           where:{id:req.query.id},
           include:[
-            {model: Arrival},
+            {model: Arrival,
+              include:[{model:Vendor}]},
             {model: Reference},
             {model: File,
               as: 'attachedFile'},
