@@ -159,6 +159,7 @@ module.exports.validateCharge = function validateCharge(charge){
         date: Joi.date().required(),
         vendorId: Joi.number().optional().allow(""),
         deliveryCompanyId: Joi.number().optional().allow(""),
+        
     })
     return schema.validate(charge)
 }
