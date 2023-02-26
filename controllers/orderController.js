@@ -61,7 +61,7 @@ exports.createOrder = async function (req, res) {
                 if(!product) {
                     return res.status(500).send({ error: 'product not found' });
                 }
-                product.quantity -= arrayReferenceQuantity[i].quantity;
+                product.stock -= arrayReferenceQuantity[i].quantity;
                 await product.save({transaction});
                 await reference.save({transaction});
             }
@@ -219,7 +219,7 @@ exports.updateOrder = async function(req,res){
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.quantity -= arrayReferenceQuantity[i].quantity;
+                    product.stock -= arrayReferenceQuantity[i].quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                     } 
@@ -244,7 +244,8 @@ exports.updateOrder = async function(req,res){
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.quantity += arrayReferenceQuantity[i].quantity;
+                    product.stock += arrayReferenceQuantity[i].quantity;
+                    product.quantityReleased += arrayReferenceQuantity[i].quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
@@ -270,7 +271,7 @@ exports.updateOrder = async function(req,res){
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.quantity += arrayReferenceQuantity[i].quantity;
+                    product.stock += arrayReferenceQuantity[i].quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
