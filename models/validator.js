@@ -174,7 +174,7 @@ module.exports.validateSponsor = function validateSponsor(sponsor){
         amountDinar: Joi.number().required(),
         note: Joi.string().required().allow(""),
         storeId: Joi.number().required(),
-        name: Joi.string().required()
+        //name: Joi.string().required()
     })
     return schema.validate(sponsor)
 }
