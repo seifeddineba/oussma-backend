@@ -21,7 +21,7 @@ module.exports.validateStore = function validateStore(store){
         url: Joi.string().required(),
         amount: Joi.number().required(),
         payed: Joi.number().required(),
-        logo: Joi.string().optional(),
+        logo: Joi.string().optional().allow(''),
         taxCode: Joi.string().required(),
         //ownerId: Joi.number().required(),
     });
@@ -55,8 +55,8 @@ module.exports.validateSubscription = function validateSubscription(subscription
 
 module.exports.validateOrder = function validateOrder(order){
     const schema = Joi.object().keys({
-        clientName: Joi.string().optional(),
-        phoneNumber: Joi.string().optional(),
+        clientName: Joi.string().optional().allow(''),
+        phoneNumber: Joi.string().optional().allow(''),
         address: Joi.string().required(),
         //city: Joi.string().required(),
         //region: Joi.string().required(),
@@ -116,7 +116,7 @@ module.exports.validateArrival = function validateArrival(arrival){
 module.exports.validateVendor = function validateVendor(vendor){
     const schema = Joi.object().keys({
         name: Joi.string().required(),
-        email : Joi.string().optional(),
+        email : Joi.string().optional().allow(''),
         address : Joi.string().required(),
         phoneNumber: Joi.string().required(),
         note: Joi.string().required().allow(""),
@@ -144,7 +144,7 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
         status: Joi.string().valid('ACTIVE', 'INACTIF').required(),
         deliveryPrice: Joi.number().required(),
         retourPrice: Joi.number().required(),
-        logo: Joi.string().optional(),
+        logo: Joi.string().optional().allow(''),
         storeIds: Joi.array().items(Joi.number()).required()
     })
     return schema.validate(deliveryCompany)
@@ -153,7 +153,7 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
 module.exports.validateCharge = function validateCharge(charge){
     const schema = Joi.object().keys({
         chargeType: Joi.string().valid('PAYMENT', 'CHARGE','ACHAT').required().allow(""),
-        type: Joi.string().valid('REÇU','EFFECTUÉ').optional(),
+        type: Joi.string().valid('REÇU','EFFECTUÉ').optional().allow(''),
         amount: Joi.number().required(),
         note: Joi.string().required().allow(""),
         storeId: Joi.number().required(),
