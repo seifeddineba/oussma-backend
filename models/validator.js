@@ -3,9 +3,9 @@ const Joi = require('joi');
 module.exports.validateOwner = function validateOwner(owner) {
     const schema = Joi.object({
         fullName: Joi.string().required(),
-        email: Joi.string().required().email(),
+        email: Joi.string().required(),
         phoneNumber: Joi.string().required(),
-        login: Joi.string().required().email(),
+        login: Joi.string().required(),
         password: Joi.string().min(6).required(),
         //accountType: Joi.string().valid('freeTrail', 'offer').required()
     });
@@ -31,7 +31,7 @@ module.exports.validateStore = function validateStore(store){
 module.exports.validateStoreUser = function validateStoreUser(storeUser){
     const schema = Joi.object().keys({
         fullName: Joi.string().required(),
-        login: Joi.string().required().email(),
+        login: Joi.string().required(),
         password: Joi.string().min(6).required(),
         salary: Joi.number().required().allow(""),
         permissionType: Joi.string().valid('VENDEUR', 'CHEF', 'RESPONSABLE').required(),
