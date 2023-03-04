@@ -132,7 +132,8 @@ exports.updateStore = async function(req,res){
 }
 
 exports.deleteStore = async function(req,res){
-  await Store.findByPk(req.query.id)
+  try {
+    await Store.findByPk(req.query.id)
     .then(store => {
       if (!store) {
         return res.status(500).send({ message: 'store not found' });
@@ -141,6 +142,14 @@ exports.deleteStore = async function(req,res){
         .then(() => res.status(200).send({ message: 'store deleted successfully' }));
     })
     .catch(error => res.status(400).send(error));
+  } catch (error) {
+    res.status(500).send({
+      status:500,
+      error:"server",
+      message : error.message
+  });
+  }
+
 };
 
 
@@ -167,7 +176,23 @@ exports.searchStore = async function(req,res){
       } else {
           query = await Store.findAll({where:{ownerId:id}});
       }
-      res.status(200).send(query);
+
+      let stores = []
+      for (let index = 0; index < query.length; index++) {
+        const store = query[index];
+
+        const nbPackage = await store.getOrders({ where: {
+          orderStatus: { [Op.or]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+          } })
+        const nbOrder = await store.getOrders({ where: {
+          orderStatus: { [Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+          } })
+        
+        stores.push({...store.dataValues,nbPackage:nbPackage.length,nbOrder:nbOrder.length})
+        
+      }
+
+      res.status(200).send(stores);
   } catch (error) {
       res.status(500).send({
           error:"server",
