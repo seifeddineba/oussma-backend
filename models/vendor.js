@@ -10,6 +10,7 @@ module.exports = (sequelize) => {
     name: Sequelize.STRING,
     email : Sequelize.STRING,
     phoneNumber: Sequelize.STRING,
+    address: Sequelize.STRING,
     note: Sequelize.TEXT
   })
 

@@ -112,8 +112,10 @@ db.store.belongsToMany(db.deliveryCompany,{ through: 'storeDeliveryCompanys' });
 db.deliveryCompany.belongsToMany(db.store,{ through: 'storeDeliveryCompanys' });
 
 //store hasmany charge
-db.store.hasMany(db.charge);
-db.charge.belongsTo(db.store);
+db.store.belongsToMany(db.charge,{ through: 'storeCharges' });
+db.charge.belongsToMany(db.store,{ through: 'storeCharges' });
+// db.store.hasMany(db.charge);
+// db.charge.belongsTo(db.store);
 
 //charge has vendor
 db.charge.belongsTo(db.vendor);

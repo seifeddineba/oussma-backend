@@ -85,6 +85,8 @@ module.exports = function (app) {
     app.get("/api/vendorService/getAllVendorByStoreId", auth, vendorController.getAllVendorByStoreId);
     app.get("/api/vendorService/searchVendor", auth, vendorController.searchVendor);
     app.post("/api/vendorService/addFileToVendor", auth, vendorController.addFileToVendor);
+    app.put("/api/vendorService/updateFileOfVendor", auth, vendorController.updateFileOfVendor);
+    app.delete("/api/vendorService/deleteFileOfVendor", auth, vendorController.deleteFileOfVendor);
     
     
     //category

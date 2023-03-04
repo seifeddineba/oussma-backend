@@ -97,20 +97,20 @@ exports.updateSponsor = async function(req,res){
 
   exports.searchSponsor = async function(req,res){
     try {
-        const {name,id} = req.query;
+        const {id} = req.query;
   
         let query;
         
-        if ( name ) {
-            query = await Sponsor.findAll({
-                    where: {
-                      name: { [Op.like]: `%${name}%` } ,
-                      storeId:id
-                    }
-                });
-        } else {
+        // if ( name ) {
+        //     query = await Sponsor.findAll({
+        //             where: {
+        //               //name: { [Op.like]: `%${name}%` } ,
+        //               storeId:id
+        //             }
+        //         });
+        // } else {
             query = await Sponsor.findAll({where:{storeId:id}});
-        }
+        //}
         res.status(200).send(query);
     } catch (error) {
         res.status(500).send({

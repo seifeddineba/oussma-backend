@@ -105,7 +105,7 @@ exports.getProductById = async function (req,res){
 
 exports.updateProduct = async function(req,res){
     try {
-      const {name,productReference,quantityReleased,stock,
+      const {name,productReference,stock,
         purchaseAmount,amoutSells,file,storeIds,references}=req.body
   
       // if(isEmptyObject(req.body)){
@@ -133,7 +133,6 @@ exports.updateProduct = async function(req,res){
 
     // Find the products to add and update
     const referenceToAddOrUpdate =  await Promise.all(references.map(async (element) => {
-      console.log("---------------------",element.referenceId)
         const reference = await Reference.findOne({where:{id:element.referenceId}})
         // if(!reference) {
         //     return res.status(500).send({ error: 'reference not found' });
@@ -165,7 +164,7 @@ exports.updateProduct = async function(req,res){
 
     // Update the order's products and quantities
     //await order.addReferences(referenceToAddOrUpdate);
-    console.log(referenceToAddOrUpdate)
+
     const updateOnDuplicate = ['quantity','reference'];
     await Reference.bulkCreate(referenceToAddOrUpdate, { updateOnDuplicate });
     if (referenceIdsToDelete.length > 0) {

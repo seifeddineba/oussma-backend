@@ -10,8 +10,8 @@ module.exports = (sequelize) => {
     quantity: Sequelize.INTEGER,
     buyingPrice: Sequelize.FLOAT,
     amount: Sequelize.FLOAT,
-    arrivalDate: Sequelize.DATE,
-    facture: Sequelize.STRING
+     //arrivalDate: Sequelize.DATE,
+    // facture: Sequelize.STRING
   },
   {
     timestamps: true,

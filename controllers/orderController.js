@@ -16,7 +16,7 @@ const Sponsor = db.sponsor
 
 exports.createOrder = async function (req, res) {
     try {
-        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
+        const {clientName,phoneNumber,address,deliveryPrice,sellPrice,
             totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
@@ -75,8 +75,6 @@ exports.createOrder = async function (req, res) {
             clientName,
             phoneNumber,
             address,
-            city,
-            region,
             deliveryPrice,
             sellPrice,
             totalAmount,
@@ -137,7 +135,7 @@ exports.getOrderById = async function (req,res){
 
 exports.updateOrder = async function(req,res){
     try {
-        const {clientName,phoneNumber,address,city,region,deliveryPrice,sellPrice,
+        const {clientName,phoneNumber,address,deliveryPrice,sellPrice,
             totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
@@ -208,44 +206,44 @@ exports.updateOrder = async function(req,res){
                     if(!reference) {
                         return res.status(500).send({ error: 'reference not found' });
                     }
-
                     // Subtract the quantity ordered from the stock
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity -= updatedOrder.references[i].orderProducts.quantity;
+                    
+                    reference.quantity -= updatedOrder.references[i].orderReferences.quantity;
                     //await reference.save({transaction});
                     const product = await Product.findByPk(reference.productId)
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.stock -= arrayReferenceQuantity[i].quantity;
+                    product.stock -= updatedOrder.references[i].orderReferences.quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                     } 
-            }
+           }
             
             else if(updatedOrder.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
             'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') && (orderStatus=='ANNULÉ' ))//+1
             {
+                console.log("2")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
                     const reference = await Reference.findByPk(updatedOrder.references[i].id);
                     if(!reference) {
                         return res.status(500).send({ error: 'reference not found' });
                     }
-
                     // Subtract the quantity ordered from the stock
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity += updatedOrder.references[i].orderProducts.quantity;
+                    reference.quantity += updatedOrder.references[i].orderReferences.quantity;
 
                     const product = await Product.findByPk(reference.productId)
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.stock += arrayReferenceQuantity[i].quantity;
-                    product.quantityReleased += arrayReferenceQuantity[i].quantity;
+                    product.stock += updatedOrder.references[i].orderReferences.quantity;
+                   // product.quantityReleased += arrayReferenceQuantity[i].quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
@@ -254,6 +252,7 @@ exports.updateOrder = async function(req,res){
 
             else if(updatedOrder.orderStatus==('RETOUR'||'RETOUR REÇU')&&updatedOrder.exchangeReceipt&&updatedOrder.exchange)//+1
             {
+                console.log("3")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
                     const reference = await Reference.findByPk(updatedOrder.references[i].id);
                     if(!reference) {
@@ -264,14 +263,14 @@ exports.updateOrder = async function(req,res){
                     // if(product.stock < order.references[i].orderReferences.quantity) {
                     //     return res.status(500).send({ error: 'product reference out of stock' });
                     // }
-                    reference.quantity += updatedOrder.references[i].orderProducts.quantity;
+                    reference.quantity += updatedOrder.references[i].orderReferences.quantity;
                     //await reference.save({transaction});
 
                     const product = await Product.findByPk(reference.productId)
                     if(!product) {
                         return res.status(500).send({ error: 'product not found' });
                     }
-                    product.stock += arrayReferenceQuantity[i].quantity;
+                    product.stock += updatedOrder.references[i].orderReferences.quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
@@ -323,11 +322,15 @@ exports.updateOrder = async function(req,res){
                       clientName: { [Op.like]: `%${clientName}%` } ,
                       phoneNumber: { [Op.like]: `%${phoneNumber}%` },
                       orderStatus: { [Op.like]: `%${orderStatus}%` },
-                      storeId:id
+                      storeId:id,
+                      orderStatus: {[Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
                     }
                 });
         } else {
-            query = await Order.findAll({where:{storeId:id}});
+            query = await Order.findAll({where:{
+                storeId:id,
+                orderStatus: {[Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
+            }});
         }
         res.status(200).send(query);
     } catch (error) {

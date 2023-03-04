@@ -32,10 +32,13 @@ exports.createDeliveryCompany = async function (req, res) {
 
         let data  = req.body
 
-        const fileName =  await uploadFile(logo)
-
-        data.logo = fileName
+        let fileName = ""
+        if(logo){
+            fileName = await uploadFile(logo)
+            data.logo = fileName
+        }
         
+      
         await DeliveryCompany.create(data).then(async (deliveryCompany) => {
             deliveryCompany.setStores(storeIds)
           });

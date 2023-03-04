@@ -117,20 +117,20 @@ exports.getAllArrivalByStoreId= async function (req,res){
 
 exports.searchArrival = async function(req,res){
   try {
-      const {arrivalDate,id} = req.query;
+      const {id} = req.query;
 
       let query;
       
-      if ( arrivalDate ) {
-          query = await Arrival.findAll({
-                  where: {
-                    [Op.eq]: arrivalDate,
-                    storeId:id
-                  }
-              });
-      } else {
+      // if ( arrivalDate ) {
+      //     query = await Arrival.findAll({
+      //             where: {
+      //               [Op.eq]: arrivalDate,
+      //               storeId:id
+      //             }
+      //         });
+      // } else {
           query = await Arrival.findAll({where:{storeId:id}});
-      }
+      //}
       res.status(200).send(query);
   } catch (error) {
       res.status(500).send({

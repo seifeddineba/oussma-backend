@@ -184,7 +184,7 @@ exports.updateVendor = async function(req,res){
 
   exports.addFileToVendor = async function (req,res){
     try {
-      const {file,date,totalAmount,payedAmount,description,vendorId}= req.body
+      const {file,date,totalAmount,description,vendorId}= req.body
 
       const vendor = await Vendor.findByPk(vendorId)
       if(!vendor){
@@ -197,7 +197,6 @@ exports.updateVendor = async function(req,res){
         url :fileName,
         date,
         totalAmount,
-        payedAmount ,
         description,
         vendorId
       })
@@ -211,3 +210,61 @@ exports.updateVendor = async function(req,res){
     }); 
     }
   }
+
+  exports.updateFileOfVendor = async function (req,res){
+    try {
+      const {file,date,totalAmount,description,vendorId}= req.body
+
+      const dataFile = await File.findByPk(req.query.id)
+      if(!dataFile){
+        return res.status(500).send('file does not exist!')
+      }
+
+      const vendor = await Vendor.findByPk(vendorId)
+      if(!vendor){
+        return res.status(500).send('vendor does not exist!')
+      }
+
+      let  fileName = dataFile.url
+      if(file){
+        fileName = await uploadFile(file)
+      }
+    
+      await File.update({
+        url :fileName,
+        date,
+        totalAmount,
+        description,
+        vendorId
+      })
+      
+      res.status(200).send({message:"file added"});
+
+    } catch (error) {
+      res.status(500).send({
+        error:"server",
+        message : error.message
+    }); 
+    }
+  }
+
+
+  exports.deleteFileOfVendor = async function(req,res){
+    try{
+    await File.findByPk(req.query.id)
+      .then(file => {
+        if (!file) {
+          return res.status(500).send({ message: 'file not found' });
+        }
+        return file.destroy()
+          .then(() => res.status(200).send({ message: 'file deleted successfully' }));
+      })
+      .catch(error => res.status(400).send(error));
+    } catch (error) {
+      res.status(500).send({
+        status:500,
+        error:"server",
+        message : error.message
+    });
+    }
+  };

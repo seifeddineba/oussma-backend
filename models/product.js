@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
         },
         //name : Sequelize.STRING,
         productReference: Sequelize.STRING,
-        quantityReleased: Sequelize.INTEGER,
+        //quantityReleased: Sequelize.INTEGER,
         stock: Sequelize.INTEGER,
         purchaseAmount: Sequelize.FLOAT,
         amoutSells: Sequelize.FLOAT,

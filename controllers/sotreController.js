@@ -48,8 +48,11 @@ exports.createStore = async function(req,res){
                 return res.status(500).send("owner doesn't existe");
             }
 
-            const fileName = await uploadFile(logo)
-
+            let fileName = ""
+            if(logo){
+              fileName= await uploadFile(logo)
+            }
+            
             // create new store
             const store = await Store.create({
               storeName,
@@ -75,11 +78,23 @@ exports.createStore = async function(req,res){
 
 exports.getStoreById = async function (req,res){
   try {
-      const store = await Store.findByPk(req.query.id)
+    let  store = await Store.findOne({
+      where: { id: req.query.id }
+    });
+
       if(!store){
           return res.status(500).send('store does not exist!')
       }
-      res.status(200).send(store);
+
+      const nbPackage = await store.getOrders({ where: {
+        orderStatus: { [Op.or]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+        } })
+      const nbOrder = await store.getOrders({ where: {
+        orderStatus: { [Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+        } })
+
+
+      res.status(200).send({store:store,nbPackage:nbPackage.length,nbOrder:nbOrder.length});
   } catch (error) {
     res.status(500).send({
       status:500,

@@ -15,19 +15,23 @@ const DeliveryCompany = db.deliveryCompany;
 
 exports.createCharge = async function (req,res){
     try {
-       const {storeId}= req.body
+       const {storeIds}= req.body
 
        const result = validateCharge(req.body);
        if (result.error) {
            return res.status(400).send(result.error.details[0].message);
        }
 
-       const store = await Store.findByPk(storeId)
-       if(!store){
-            return res.status(500).send("store doesn't existe");
-       }
-
-       const charge = await Charge.create(req.body)
+       for (let i = 0; i < storeIds.length; i++) {
+        const store = await Store.findByPk(storeIds[i]);
+        if(!store) {
+          return res.status(500).send("store doesn't existe");
+        }
+    }
+       
+       await Charge.create(req.body).then(async (charge) => {
+        charge.setStores(storeIds)
+      });
         
        res.status(200).send({ message:"charge created" });
     } catch (error) {
@@ -60,13 +64,32 @@ exports.getChargeById = async function (req,res){
 
 exports.updateCharge = async function(req,res){
     try {
-      const {type,amount,note,storeId}=req.body
+      const {type,amount,note,storeIds}=req.body
   
       if(isEmptyObject(req.body)){
         return res.status(400).send('All fields should not be empty')
       }
+
+      
+      const charge = await Charge.findByPk(req.query.id)
+
+      const currentStores = await charge.getStores()
+
+      const storesToRemove = currentStores.filter(
+      (p) => !storeIds.map((c) => c).includes(p.id)
+      );
+      const storesToAdd = storeIds.filter(
+      (c) => !currentStores.map((p) => p.id).includes(c)
+      );
+
+      await Promise.all(
+      storesToRemove.map(async (c) => await charge.removeStores(c))
+      );
+      await Promise.all(storesToAdd.map(async (c) => await charge.addStores(c)));
+
+      await charge.update(req.body);
   
-      await Charge.update(req.body,{where:{id:req.query.id}});
+      //await Charge.update(req.body,{where:{id:req.query.id}});
   
         res.status(200).send({ message:"Charge Updated" });
     } catch (error) {
@@ -91,7 +114,7 @@ exports.updateCharge = async function(req,res){
   };
 
   exports.getAllChargeByStoreId= async function (req,res){
-    const charges = await Charge.findAll({where:{storeId:req.query.id}})
+    const charges = await Store.findByPk(req.query.id, { include: [{model:Charge}] });
     res.status(200).send(charges)
   }
 
@@ -102,17 +125,39 @@ exports.updateCharge = async function(req,res){
         let query;
         
         if ( type || chargeType) {
-            query = await Charge.findAll({
+                query = await Store.findOne({  
+                  where:{
+                    id
+                  },
+                  include: [{
+                  model: Charge,
                     where: {
                       type: { [Op.like]: `%${type}%` } ,
                       chargeType : { [Op.like]: `%${chargeType}%` } ,
-                      storeId:id
                     },
                     include:[{model:Vendor},{model:DeliveryCompany}]
-                });
+                    }]
+                  }
+                );
         } else {
-            query = await Charge.findAll({where:{storeId:id},include:[{model:Vendor},{model:DeliveryCompany}]});
+            query =  await Store.findOne({  
+              where:{
+                id
+              },
+              include: [{
+              model: Charge,
+                include:[{model:Vendor},{model:DeliveryCompany}]
+                }]
+              }
+            );
         }
+
+        if(!query)
+        query=[]
+        else{
+          query=query.charges
+        }
+        
         res.status(200).send(query);
     } catch (error) {
         res.status(500).send({

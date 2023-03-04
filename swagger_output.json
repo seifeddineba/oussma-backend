@@ -1110,9 +1110,6 @@
                 "productReference": {
                   "example": "any"
                 },
-                "quantityReleased": {
-                  "example": "any"
-                },
                 "stock": {
                   "example": "any"
                 },
@@ -1206,9 +1203,6 @@
               "type": "object",
               "properties": {
                 "productReference": {
-                  "example": "any"
-                },
-                "quantityReleased": {
                   "example": "any"
                 },
                 "stock": {
@@ -1558,11 +1552,6 @@
             "type": "string"
           },
           {
-            "name": "arrivalDate",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -1648,6 +1637,9 @@
                   "example": "any"
                 },
                 "storeIds": {
+                  "example": "any"
+                },
+                "address": {
                   "example": "any"
                 }
               }
@@ -1858,9 +1850,6 @@
                   "example": "any"
                 },
                 "totalAmount": {
-                  "example": "any"
-                },
-                "payedAmount": {
                   "example": "any"
                 },
                 "description": {
@@ -2602,9 +2591,6 @@
                 },
                 "storeId": {
                   "example": "any"
-                },
-                "name": {
-                  "example": "any"
                 }
               }
             }
@@ -2787,11 +2773,6 @@
             "type": "string"
           },
           {
-            "name": "name",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "id",
             "in": "query",
             "type": "string"
@@ -2934,6 +2915,99 @@
           }
         }
       }
+    }, 
+    "/api/storeService/updateFileOfVendor": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "totalAmount": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "vendorId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/storeService/deleteFileOfVendor": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
+    
   }
 }
