@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateSponsor, isEmptyObject } = require('../models/validator');
 const { Op } = require('sequelize');
+const { generateFactureCode } = require('./sharedFunctions');
 
 const User = db.user;
 const Owner = db.owner;
@@ -29,6 +30,10 @@ exports.createSponsor = async function (req, res) {
         }
 
         const sponsor = await Sponsor.create(req.body)
+
+        const code = await generateFactureCode(sponsor.id)
+        sponsor.code = code
+        sponsor.save()
         
         res.status(200).send({ message:"sponsor created" });
     } catch (error) {

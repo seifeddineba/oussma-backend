@@ -56,8 +56,7 @@ module.exports = function (app) {
     app.get("/api/orderService/searchPackage", auth, orderController.searchPackage);
     app.delete("/api/orderService/DeleteMultipleOrders", auth, orderController.DeleteMultipleOrders);
     app.put("/api/orderService/UpdateStatusForMultipleOrders", auth, orderController.UpdateStatusForMultipleOrders);
-    
-
+    app.get("/api/orderService/getDeliveryNoteForOrder", auth, orderController.getDeliveryNoteForOrder);
     
 
     //product
@@ -76,6 +75,7 @@ module.exports = function (app) {
     app.get("/api/arrivalService/getAllArrivalByStoreId", auth, arrivalController.getAllArrivalByStoreId);
     app.get("/api/arrivalService/searchArrival", auth, arrivalController.searchArrival);
     app.post("/api/arrivalService/selectFileForArrival", auth, arrivalController.selectFileForArrival);
+    app.get("/api/arrivalService/getAllArrivalForPorduct", auth, arrivalController.getAllArrivalForPorduct);
 
     //vendor
     app.post("/api/vendorService/createVendor", auth, vendorController.createVendor);

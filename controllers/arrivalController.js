@@ -158,3 +158,26 @@ exports.selectFileForArrival = async function(req,res){
   }); 
   }
 }
+
+exports.getAllArrivalForPorduct = async function(req,res){
+  try {
+
+    const result = await Product.findOne({
+      where: { id: req.query.id },
+      include: [{
+        model: db.arrival
+      }]
+    });
+
+    res.status(200).send(result);
+    
+  } catch (error) {
+    res.status(500).send({
+      error:"server",
+      message : error.message
+  }); 
+  }
+}
+
+
+//get arrival for product

@@ -69,7 +69,7 @@ exports.createOrder = async function (req, res) {
             //
         }
 
-
+        
         //gain a caluculer
         const order = await Order.create({
             clientName,
@@ -87,8 +87,14 @@ exports.createOrder = async function (req, res) {
             storeId: store.id,
             deliveryCompanyId,
             reduction,
-            sponsorId
+            sponsorId,
+            code 
         },{transaction}).then(async (order) => {
+
+            const code = await generateFactureCode(createdfile.id)
+            order.code = code
+            await order.save()
+
             let data = arrayReferenceQuantity.map((item)=>{
                 return {...item,orderId:order.id}
             })
@@ -198,8 +204,8 @@ exports.updateOrder = async function(req,res){
         include:[{model:Reference}]})
 
             
-            if((updatedOrder.orderStatus=='ANNULÉ' )&& orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
-            'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
+            if((order.orderStatus==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE') )&& 
+            orderStatus==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
             {
                 for (let i = 0; i < updatedOrder.references.length; i++) {
                     const reference = await Reference.findByPk(updatedOrder.references[i].id);
@@ -218,13 +224,14 @@ exports.updateOrder = async function(req,res){
                         return res.status(500).send({ error: 'product not found' });
                     }
                     product.stock -= updatedOrder.references[i].orderReferences.quantity;
+                    product.quantityReleased += updatedOrder.references[i].orderReferences.quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                     } 
            }
             
-            else if(updatedOrder.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||
-            'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') && (orderStatus=='ANNULÉ' ))//+1
+            else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') &&
+             (orderStatus==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE')))//+1
             {
                 console.log("2")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
@@ -243,14 +250,14 @@ exports.updateOrder = async function(req,res){
                         return res.status(500).send({ error: 'product not found' });
                     }
                     product.stock += updatedOrder.references[i].orderReferences.quantity;
-                   // product.quantityReleased += arrayReferenceQuantity[i].quantity;
+                    product.quantityReleased -= updatedOrder.references[i].orderReferences.quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
     
             }
 
-            else if(updatedOrder.orderStatus==('RETOUR'||'RETOUR REÇU')&&updatedOrder.exchangeReceipt&&updatedOrder.exchange)//+1
+            else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
             {
                 console.log("3")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
@@ -271,6 +278,7 @@ exports.updateOrder = async function(req,res){
                         return res.status(500).send({ error: 'product not found' });
                     }
                     product.stock += updatedOrder.references[i].orderReferences.quantity;
+                    product.quantityReleased -= updatedOrder.references[i].orderReferences.quantity;
                     await product.save({transaction});
                     await reference.save({transaction});
                 } 
@@ -323,13 +331,13 @@ exports.updateOrder = async function(req,res){
                       phoneNumber: { [Op.like]: `%${phoneNumber}%` },
                       orderStatus: { [Op.like]: `%${orderStatus}%` },
                       storeId:id,
-                      orderStatus: {[Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
-                    }
+                      orderStatus: {[Op.or]: ['','ANNULÉ','CONFIRMÉ','EMBALLÉ','EN ATTENTE','PRÊT','CONFIRMÉ/ARTICLE NON DISPONIBLE','PAS DE RÉPONSE']}
+                    } 
                 });
         } else {
             query = await Order.findAll({where:{
                 storeId:id,
-                orderStatus: {[Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
+                orderStatus: {[Op.or]: ['','ANNULÉ','CONFIRMÉ','EMBALLÉ','EN ATTENTE','PRÊT','CONFIRMÉ/ARTICLE NON DISPONIBLE','PAS DE RÉPONSE']}
             }});
         }
         res.status(200).send(query);
@@ -352,14 +360,14 @@ exports.updateOrder = async function(req,res){
                     where: {
                       clientName: { [Op.like]: `%${clientName}%` } ,
                       phoneNumber: { [Op.like]: `%${phoneNumber}%` },
-                      orderStatus: {[Op.in]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']},
+                      orderStatus: {[Op.or]: ['EN COURS','RETOUR','RETOUR REÇU','RETOUR PAYÉ','LIVRÉ','PAYÉ']},
                       storeId:id
                     }
                 });
         } else {
             query = await Order.findAll({where:{
                 storeId:id,
-                orderStatus: {[Op.in]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ']}
+                orderStatus: {[Op.or]: ['EN COURS','RETOUR','RETOUR REÇU','RETOUR PAYÉ','LIVRÉ','PAYÉ']}
             }});
         }
         res.status(200).send(query);
@@ -390,12 +398,118 @@ exports.updateOrder = async function(req,res){
 
 exports.UpdateStatusForMultipleOrders = async function(req,res){
     try{  
+
         const { orderIds, status } = req.body; 
 
-        await Order.update({ orderStatus:status },{ where: { id: { [Op.in]: orderIds  } } }) // delete products matching the specified IDs
-        .then((result) => {
-            res.status(200).json({ message: 'Products deleted successfully.' });
-        })
+        const transaction = await db.sequelize.transaction();
+
+
+        for (let index = 0; index < orderIds.length; index++) {
+            const orderId = orderIds[index];
+
+            
+        const order = await Order.findOne({where:{id:orderId},
+            include:[{model:Reference}]})
+    
+            if(!order){
+                return res.status(500).send('order does not exist!')
+            }
+
+             
+            if((order.orderStatus==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE') )&& 
+            status==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
+            {
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
+                    }
+                    // Subtract the quantity ordered from the stock
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    
+                    reference.quantity -= order.references[i].orderReferences.quantity;
+                    //await reference.save({transaction});
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.stock -= order.references[i].orderReferences.quantity;
+                    product.quantityReleased += order.references[i].orderReferences.quantity;
+                    await product.save({transaction});
+                    await reference.save({transaction});
+                    } 
+           }
+            
+            else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') &&
+             (status==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE')))//+1
+            {
+                console.log("2")
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
+                    }
+                    // Subtract the quantity ordered from the stock
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    reference.quantity += order.references[i].orderReferences.quantity;
+
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.stock += order.references[i].orderReferences.quantity;
+                    product.quantityReleased -= order.references[i].orderReferences.quantity;
+                    await product.save({transaction});
+                    await reference.save({transaction});
+                } 
+    
+            }
+
+            else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
+            {
+                console.log("3")
+                for (let i = 0; i < order.references.length; i++) {
+                    const reference = await Reference.findByPk(order.references[i].id);
+                    if(!reference) {
+                        return res.status(500).send({ error: 'reference not found' });
+                    }
+
+                    // Subtract the quantity ordered from the stock
+                    // if(product.stock < order.references[i].orderReferences.quantity) {
+                    //     return res.status(500).send({ error: 'product reference out of stock' });
+                    // }
+                    reference.quantity += order.references[i].orderReferences.quantity;
+                    //await reference.save({transaction});
+
+                    const product = await Product.findByPk(reference.productId)
+                    if(!product) {
+                        return res.status(500).send({ error: 'product not found' });
+                    }
+                    product.stock += order.references[i].orderReferences.quantity;
+                    product.quantityReleased -= order.references[i].orderReferences.quantity;
+                    await product.save({transaction});
+                    await reference.save({transaction});
+                } 
+    
+            }
+            
+            order.orderStatus=status
+            await order.save()
+            //await Order.update({ orderStatus:status },{ where: { id: orderId } },{transaction})
+            await transaction.commit()
+        }
+
+
+        res.status(200).json({ message: 'Products updated successfully.' });
+
+        // await Order.update({ orderStatus:status },{ where: { id: { [Op.in]: orderIds  } } }) // delete products matching the specified IDs
+        // .then((result) => {
+        //     res.status(200).json({ message: 'Products updated successfully.' });
+        // })
 
   } catch (error) {
     res.status(500).send({
@@ -404,3 +518,25 @@ exports.UpdateStatusForMultipleOrders = async function(req,res){
     }); 
 }
 }
+
+exports.getDeliveryNoteForOrder = async function(req,res){
+
+    try {
+
+        const order = await Order.findOne({where:{id:req.query.id},include:[{model:Store},{model:Reference,
+            include:[{model:Product}]}]})
+        if(!order){
+            return res.status(500).send({ error: 'order not found' });
+        }
+
+        res.status(200).send(order);
+        
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+
+}
+

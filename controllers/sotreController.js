@@ -171,10 +171,17 @@ exports.searchStore = async function(req,res){
                     storeName: { [Op.like]: `%${storeName}%` } ,
                     phoneNumber: { [Op.like]: `%${phoneNumber}%` } ,
                     ownerId:id
-                  }
+                  },
+                  include: [{
+                    model: StoreUser,
+                    attributes: [[db.Sequelize.fn('COUNT', 'storeUsers.id'), 'storeUsersCount']]
+                  }]
               });
       } else {
-          query = await Store.findAll({where:{ownerId:id}});
+          query = await Store.findAll({where:{ownerId:id},include: [{
+            model: StoreUser,
+            attributes: [[db.Sequelize.fn('COUNT', 'storeUsers.id'), 'storeUsersCount']]
+          }]});
       }
 
       let stores = []
@@ -182,10 +189,10 @@ exports.searchStore = async function(req,res){
         const store = query[index];
 
         const nbPackage = await store.getOrders({ where: {
-          orderStatus: { [Op.or]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+          orderStatus: { [Op.or]: ['','ANNULÉ','CONFIRMÉ','EMBALLÉ','EN ATTENTE','PRÊT','CONFIRMÉ/ARTICLE NON DISPONIBLE','PAS DE RÉPONSE'] } 
           } })
         const nbOrder = await store.getOrders({ where: {
-          orderStatus: { [Op.notIn]: ['CONFIRMÉ','EMBALLÉ','PRÊT','EN COURS','LIVRÉ','PAYÉ'] } 
+          orderStatus: { [Op.or]: ['EN COURS','RETOUR','RETOUR REÇU','RETOUR PAYÉ','LIVRÉ','PAYÉ'] } 
           } })
         
         stores.push({...store.dataValues,nbPackage:nbPackage.length,nbOrder:nbOrder.length})

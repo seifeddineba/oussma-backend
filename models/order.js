@@ -26,7 +26,8 @@ module.exports = (sequelize) => {
         exchange: Sequelize.BOOLEAN,
         exchangeReceipt: Sequelize.BOOLEAN,
         note: Sequelize.TEXT,
-        collectionDate: Sequelize.DATE
+        collectionDate: Sequelize.DATE,
+        code: Sequelize.STRING,
         }, {
             timestamps: true,
             createdAt: 'created_at',

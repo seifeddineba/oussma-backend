@@ -1,7 +1,7 @@
 const db = require('../config/dbConfig');
 const {validateVendor, isEmptyObject } = require('../models/validator');
 const { Op } = require('sequelize');
-const { uploadFile } = require('./sharedFunctions');
+const { uploadFile, generateFactureCode } = require('./sharedFunctions');
 
 const User = db.user;
 const Owner = db.owner;
@@ -193,13 +193,17 @@ exports.updateVendor = async function(req,res){
 
       const fileName = await uploadFile(file)
 
-      await File.create({
+      const createdfile = await File.create({
         url :fileName,
         date,
         totalAmount,
         description,
         vendorId
       })
+      
+      const code = await generateFactureCode(createdfile.id)
+      createdfile.code = code
+      createdfile.save()
       
       res.status(200).send({message:"file added"});
 

@@ -10,7 +10,8 @@ module.exports = (sequelize) => {
        url: Sequelize.STRING,
        date: Sequelize.DATE,
        totalAmount: Sequelize.FLOAT,
-       description: Sequelize.TEXT
+       description: Sequelize.TEXT,
+       code: Sequelize.STRING,
     })
     return File;
 }

@@ -100,6 +100,12 @@ module.exports.uploadFile = async function (data){
 
 } 
 
+module.exports.generateFactureCode = async function generateFactureCode(id) {
+  const paddedId = String(id).padStart(8, '0');
+  const factureCode = `FAC${paddedId}`;
+  return factureCode;
+}
+
 
 async function makeid() {
   let result = '';

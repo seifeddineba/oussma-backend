@@ -50,7 +50,9 @@ exports.createProduct = async function (req,res){
 
         const file = await File.create({url : fileName})
 
-        const product = await Product.create(req.body).then(async (product) => {
+        const data = await Object.assign(req.body, {quantityReleased:0})
+
+        const product = await Product.create(data).then(async (product) => {
             await product.setStores(storeIds)
 
             let data = references.map((item)=>{
