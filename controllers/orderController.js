@@ -93,8 +93,7 @@ exports.createOrder = async function (req, res) {
             storeId: store.id,
             deliveryCompanyId,
             reduction,
-            sponsorId,
-            code 
+            sponsorId
         },{transaction}).then(async (order) => {
 
             const code = await generateFactureCode(createdfile.id)

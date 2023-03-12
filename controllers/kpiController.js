@@ -42,8 +42,11 @@ exports.getstatisticsForOrderAndPackage = async function(req, res){
 var moment = require('moment'); // require
 
 exports.getstatisticsTotalAmount = async function(req, res){
-
+    
     try {
+
+        const {orderStatus}= req.query
+
         const statistics = await Order.findAll({
             attributes: [
               [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v'), 'week'],
@@ -51,7 +54,10 @@ exports.getstatisticsTotalAmount = async function(req, res){
             ],
             group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v')],
             where: {
-               
+                created_at: {
+                [Op.gte]: moment().subtract(1, 'weeks').toDate(),
+                orderStatus:orderStatus
+              },
             },
           });
           
