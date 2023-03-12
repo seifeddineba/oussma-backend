@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
         phoneNumber: Sequelize.STRING,
         address: Sequelize.STRING,
         city: Sequelize.STRING,
-        region: Sequelize.STRING,
+        //region: Sequelize.STRING,
         deliveryPrice: Sequelize.FLOAT,
         sellPrice: Sequelize.FLOAT,
         totalAmount: Sequelize.FLOAT,

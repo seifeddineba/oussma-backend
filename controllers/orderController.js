@@ -17,7 +17,7 @@ const Sponsor = db.sponsor
 
 exports.createOrder = async function (req, res) {
     try {
-        const {clientName,phoneNumber,address,deliveryPrice,sellPrice,
+        const {clientName,phoneNumber,address,city,deliveryPrice,sellPrice,
             totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
@@ -49,7 +49,7 @@ exports.createOrder = async function (req, res) {
                 return res.status(500).send({ error: 'reference not found' });
             }
 
-            if(orderStatus || orderStatus!='ANNULÉ'){
+            if(orderStatus || orderStatus!=(''||'ANNULÉ'||'EN ATTENTE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE'||'PAS DE RÉPONSE')){
                 // if(product.stock < arrayReferenceQuantity[i].quantity) {
                 //     return res.status(500).send({ error: 'product out of stock' });
                 // }
@@ -91,6 +91,7 @@ exports.createOrder = async function (req, res) {
             exchange,
             exchangeReceipt,
             gain,
+            city,
             storeId: store.id,
             deliveryCompanyId,
             reduction,
@@ -147,7 +148,7 @@ exports.getOrderById = async function (req,res){
 exports.updateOrder = async function(req,res){
     try {
         const {clientName,phoneNumber,address,deliveryPrice,sellPrice,
-            totalAmount,orderStatus,note,collectionDate,exchange,exchangeReceipt,arrayReferenceQuantity
+            totalAmount,orderStatus,note,collectionDate,city,exchange,exchangeReceipt,arrayReferenceQuantity
             ,storeId,deliveryCompanyId,reduction,sponsorId} = req.body
 
         const transaction = await db.sequelize.transaction();
