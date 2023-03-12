@@ -57,7 +57,8 @@ module.exports = function (app) {
     app.delete("/api/orderService/DeleteMultipleOrders", auth, orderController.DeleteMultipleOrders);
     app.put("/api/orderService/UpdateStatusForMultipleOrders", auth, orderController.UpdateStatusForMultipleOrders);
     app.get("/api/orderService/getDeliveryNoteForOrder", auth, orderController.getDeliveryNoteForOrder);
-    
+    app.get("/api/orderService/getstatisticsForOrderAndPackage", auth, orderController.getstatisticsForOrderAndPackage);
+
 
     //product
     app.post("/api/productService/createProduct", auth, productController.createProduct);

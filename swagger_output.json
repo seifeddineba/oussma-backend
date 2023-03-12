@@ -2841,7 +2841,7 @@
         }
       }
     }, 
-    "/api/storeService/DeleteMultipleOrders": {
+    "/api/orderService/DeleteMultipleOrders": {
       "delete": {
         "description": "",
         "parameters": [
@@ -2877,7 +2877,7 @@
         }
       }
     }, 
-    "/api/storeService/UpdateStatusForMultipleOrders": {
+    "/api/orderService/UpdateStatusForMultipleOrders": {
       "put": {
         "description": "",
         "parameters": [
@@ -2916,7 +2916,7 @@
         }
       }
     }, 
-    "/api/storeService/updateFileOfVendor": {
+    "/api/vendorService/updateFileOfVendor": {
       "put": {
         "description": "",
         "parameters": [
@@ -2974,7 +2974,7 @@
         }
       }
     }, 
-    "/api/storeService/deleteFileOfVendor": {
+    "/api/vendorService/deleteFileOfVendor": {
       "delete": {
         "description": "",
         "parameters": [
@@ -2986,6 +2986,108 @@
           {
             "name": "id",
             "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/arrivalService/getAllArrivalForPorduct": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/orderService/getDeliveryNoteForOrder": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/orderService/getstatisticsForOrderAndPackage": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
             "type": "string"
           }
         ],

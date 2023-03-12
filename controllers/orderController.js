@@ -540,3 +540,27 @@ exports.getDeliveryNoteForOrder = async function(req,res){
 
 }
 
+exports.getstatisticsForOrderAndPackage = async function(req, res){
+
+    try {
+        const orderStatusCounts = await Order.findAll({
+            attributes: ['orderStatus', [db.Sequelize.fn('COUNT', db.Sequelize.col('id')), 'count']],
+            group: ['orderStatus']
+          });
+          
+          // Calculate the number of orders for each status
+          const result = {};
+          orderStatusCounts.forEach(statusCount => {
+            result[statusCount.orderStatus] = statusCount.get('count');
+          });
+      
+          res.status(200).send(result);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+
+}
+

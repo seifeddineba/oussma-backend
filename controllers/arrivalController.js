@@ -178,6 +178,3 @@ exports.getAllArrivalForPorduct = async function(req,res){
   }); 
   }
 }
-
-
-//get arrival for product
