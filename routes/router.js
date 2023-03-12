@@ -130,5 +130,7 @@ module.exports = function (app) {
     //kpi api 
     app.get("/api/kpiService/getstatisticsForOrderAndPackage", auth, kpiController.getstatisticsForOrderAndPackage);
     app.get("/api/kpiService/getstatisticsTotalAmount", auth, kpiController.getstatisticsTotalAmount);
+    app.get("/api/kpiService/getstatisticsGain", auth, kpiController.getstatisticsGain);
+    app.get("/api/kpiService/getMostSoldProduct", auth, kpiController.getMostSoldProduct);
     
 }

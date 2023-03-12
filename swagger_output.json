@@ -3109,6 +3109,113 @@
           }
         }
       }
+    }, 
+    "/api/kpiService/getstatisticsTotalAmount": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "orderStatus",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "type": "week/month/year"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/kpiService/getstatisticsGain": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "orderStatus",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "type": "week/month/year"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }, 
+    "/api/kpiService/getMostSoldProduct": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-auth",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
     
   }

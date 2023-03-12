@@ -39,27 +39,27 @@ exports.getstatisticsForOrderAndPackage = async function(req, res){
 
 }
 
-var moment = require('moment'); // require
-
 exports.getstatisticsTotalAmount = async function(req, res){
     
     try {
 
         const {orderStatus,period}= req.query
-        // week
-        // month 
-        // year
+
+        let timeForm = '%x-%v'
+        if(period === 'month'){
+            timeForm= '%m/%Y'
+        }else if(period === 'year'){
+            timeForm= '%Y'
+        }
+
         const statistics = await Order.findAll({
             attributes: [
-              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v'), period],
+              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm), period],
               [db.Sequelize.fn('sum', db.Sequelize.col('totalAmount')), 'totalAmount'],
             ],
-            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v')],
+            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm)],
             where: {
-            //     created_at: {
-            //     [Op.gte]: moment().subtract(1, 'weeks').toDate(),
-            //   },
-              orderStatus:orderStatus
+              orderStatus: orderStatus
             },
           });
           
@@ -72,4 +72,55 @@ exports.getstatisticsTotalAmount = async function(req, res){
     }
 
 }
+
+exports.getstatisticsGain = async function(req, res){
+    
+    try {
+
+        const {orderStatus,period}= req.query
+
+        let timeForm = '%x-%v'
+        if(period === 'month'){
+            timeForm= '%m/%Y'
+        }else if(period === 'year'){
+            timeForm= '%Y'
+        }
+
+        const statistics = await Order.findAll({
+            attributes: [
+              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm), period],
+              [db.Sequelize.fn('sum', db.Sequelize.col('gain')), 'gain'],
+            ],
+            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm)],
+            where: {
+              orderStatus: orderStatus
+            },
+          });
+          
+          res.status(200).send(statistics);
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+
+}
+
+exports.getMostSoldProduct = async function(req,res){
+    try {
+        const mostSoldProducts = await Product.findAll({
+            order: [['quantityReleased', 'DESC']],
+            limit: 20 
+          });
+
+          res.status(200).send(mostSoldProducts)
+    } catch (error) {
+        res.status(500).send({
+            error:"server",
+            message : error.message
+        }); 
+    }
+}
+
 
