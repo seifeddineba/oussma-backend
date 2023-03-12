@@ -156,7 +156,7 @@ module.exports.validateCharge = async function validateCharge(charge){
         type: Joi.string().valid('REÇU','EFFECTUÉ').optional().allow(''),
         amount: Joi.number().required(),
         note: Joi.string().required().allow(""),
-        storeId: Joi.number().required(),
+        storeIds: Joi.array().items(Joi.number()).required(),
         date: Joi.date().required(),
         vendorId: Joi.number().optional().allow(""),
         deliveryCompanyId: Joi.number().optional().allow(""),

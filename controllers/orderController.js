@@ -49,8 +49,9 @@ exports.createOrder = async function (req, res) {
                 return res.status(500).send({ error: 'reference not found' });
             }
 
-            if(orderStatus!==(''||'ANNULÉ'||'EN ATTENTE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE'||'PAS DE RÉPONSE'
-            ||'RETOUR'||'RETOUR REÇU'||'RETOUR PAYÉ')){
+
+            const excludedStatuses = ['ANNULÉ', 'EN ATTENTE', 'CONFIRMÉ/ARTICLE NON DISPONIBLE', 'PAS DE RÉPONSE', 'RETOUR', 'RETOUR REÇU', 'RETOUR PAYÉ'];
+            if (!excludedStatuses.includes(orderStatus)) {
                 // if(product.stock < arrayReferenceQuantity[i].quantity) {
                 //     return res.status(500).send({ error: 'product out of stock' });
                 // }
@@ -211,9 +212,13 @@ exports.updateOrder = async function(req,res){
     const updatedOrder = await Order.findOne({where:{id:req.query.id},
         include:[{model:Reference}]})
 
+        const StatusesMins = ['ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE'];
+        const Statusesplus = ['CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'];
+        const StatusesRetour = ['RETOUR'||'RETOUR REÇU']
             
-            if((order.orderStatus==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE') )&& 
-            orderStatus==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ'))//-1
+        if (!excludedStatuses.includes(orderStatus))
+            
+            if(order.orderStatus.includes(StatusesMins)&&orderStatus.includes(Statusesplus))//-1
             {
                 for (let i = 0; i < updatedOrder.references.length; i++) {
                     const reference = await Reference.findByPk(updatedOrder.references[i].id);
@@ -238,8 +243,7 @@ exports.updateOrder = async function(req,res){
                     } 
            }
             
-            else if(order.orderStatus==('CONFIRMÉ'||'EMBALLÉ'||'PRÊT'||'EN COURS'||'LIVRÉ'||'PAYÉ') &&
-             (orderStatus==('ANNULÉ'||''||'EN ATTENTE'||'PAS DE RÉPONSE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE')))//+1
+            else if(order.orderStatus.includes(Statusesplus)&&orderStatus.includes(StatusesMins))//+1
             {
                 console.log("2")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
@@ -265,7 +269,7 @@ exports.updateOrder = async function(req,res){
     
             }
 
-            else if(order.orderStatus==('RETOUR'||'RETOUR REÇU')&&order.exchangeReceipt&&order.exchange)//+1
+            else if(order.orderStatus.includes(StatusesRetour)&&order.exchangeReceipt&&order.exchange)//+1
             {
                 console.log("3")
                 for (let i = 0; i < updatedOrder.references.length; i++) {
