@@ -80,7 +80,7 @@ module.exports.validateOrder = function validateOrder(order){
     return schema.validate(order)
 }
 
-module.exports.validateProduct = function validateProduct(product){
+module.exports.validateProduct = async function validateProduct(product){
     const schema = Joi.object().keys({
         productReference: Joi.string().required(),
         //quantityReleased: Joi.number().required(),

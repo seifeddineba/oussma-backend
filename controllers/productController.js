@@ -24,7 +24,7 @@ exports.createProduct = async function (req,res){
 
         const {storeIds,vendorId,categoryId,references}=req.body
 
-        const result = validateProduct(req.body)
+        const result = await validateProduct(req.body)
         if (result.error) {
             return res.status(400).send(result.error.details[0].message);
         }
@@ -35,7 +35,7 @@ exports.createProduct = async function (req,res){
             return res.status(500).send("category doesn't existe");
         }
 
-        const vendor = Vendor.findOne({ where: { id: vendorId }})
+        const vendor = await Vendor.findOne({ where: { id: vendorId }})
         if (!vendor) {
           return res.status(500).json({ message: 'Vendor not found' });
         }
@@ -46,25 +46,35 @@ exports.createProduct = async function (req,res){
               return res.status(500).send("store doesn't existe");
             }
         }
-        const fileName = await uploadFile(req.body.file)
 
-        const file = await File.create({url : fileName})
+        let createdFile
+        if(req.body.file){
+          const fileName = await uploadFile(req.body.file)
+          createdFile = await File.create({url : fileName})
+          //await product.update({fileId:createdFile.id})
+        }
+        
+        // const fileName = await uploadFile(req.body.file)
+
+        // const file = await File.create({url : fileName})
 
         const data = await Object.assign(req.body, {quantityReleased:0})
 
         const product = await Product.create(data).then(async (product) => {
             await product.setStores(storeIds)
 
-            let data = references.map((item)=>{
+            let data = await references.map((item)=>{
               return {...item,productId:product.id}
             })
-            Reference.bulkCreate(data).then(async () => {
+            await Reference.bulkCreate(data).then(async () => {
                 // await transaction.commit();
-                res.status(200).send({ message:"order created" });
+                //res.status(200).send({ message:"order created" });
               });
-        await product.update({fileId:file.id})
-        res.status(200).send({ message:"product created" }); 
+        await product.update({fileId:createdFile.id})
+        
         });
+
+        res.status(200).send({ message:"product created" }); 
 
         
 
