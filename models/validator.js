@@ -58,7 +58,7 @@ module.exports.validateOrder = async function validateOrder(order){
         clientName: Joi.string().optional().allow(''),
         phoneNumber: Joi.string().optional().allow(''),
         address: Joi.string().required(),
-        //city: Joi.string().required(),
+        city: Joi.string().required().allow(''),
         //region: Joi.string().required(),
         deliveryPrice: Joi.number().required(),
         sellPrice: Joi.number().required(),
