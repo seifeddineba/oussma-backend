@@ -45,11 +45,13 @@ exports.getstatisticsTotalAmount = async function(req, res){
     
     try {
 
-        const {orderStatus}= req.query
-
+        const {orderStatus,period}= req.query
+        // week
+        // month 
+        // year
         const statistics = await Order.findAll({
             attributes: [
-              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v'), 'week'],
+              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v'), period],
               [db.Sequelize.fn('sum', db.Sequelize.col('totalAmount')), 'totalAmount'],
             ],
             group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v')],
