@@ -97,7 +97,7 @@ exports.createOrder = async function (req, res) {
             sponsorId
         },{transaction}).then(async (order) => {
 
-            const code = await generateFactureCode(createdfile.id)
+            const code = await generateFactureCode(order.id)
             order.code = code
             await order.save()
 
