@@ -49,7 +49,7 @@ exports.createOrder = async function (req, res) {
                 return res.status(500).send({ error: 'reference not found' });
             }
 
-            if(orderStatus!=(''||'ANNULÉ'||'EN ATTENTE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE'||'PAS DE RÉPONSE'
+            if(orderStatus!==(''||'ANNULÉ'||'EN ATTENTE'||'CONFIRMÉ/ARTICLE NON DISPONIBLE'||'PAS DE RÉPONSE'
             ||'RETOUR'||'RETOUR REÇU'||'RETOUR PAYÉ')){
                 // if(product.stock < arrayReferenceQuantity[i].quantity) {
                 //     return res.status(500).send({ error: 'product out of stock' });
