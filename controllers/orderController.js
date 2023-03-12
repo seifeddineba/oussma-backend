@@ -77,8 +77,20 @@ exports.createOrder = async function (req, res) {
             
             //
         }
-         
-        const gain = totalAmount-(deliveryPrice+priceAllProduct)
+
+        let retourPrice = 0
+         if(orderStatus === 'RETOUR'){
+            await DeliveryCompany.findByPk(deliveryCompanyId).then((deliveryCompany) => {
+                retourPrice = deliveryCompany.retourPrice
+            })
+         }
+        const gain = totalAmount-(deliveryPrice+priceAllProduct+retourPrice)
+
+        let orderReadyDate = null
+        if(orderStatus === 'EN COURS'){
+            orderReadyDate = new Date() 
+        }
+        
         let orderId
         await Order.create({
             clientName,
@@ -97,7 +109,8 @@ exports.createOrder = async function (req, res) {
             storeId: store.id,
             deliveryCompanyId,
             reduction,
-            sponsorId
+            sponsorId,
+            orderReadyDate
         },{transaction}).then(async (order) => {
             orderId = order.id
             let data = await arrayReferenceQuantity.map((item)=>{
@@ -313,15 +326,27 @@ exports.updateOrder = async function(req,res){
                 priceAllProduct+=(product.purchaseAmount*reference.quantity)
             }
 
-            order.gain = order.totalAmount-(order.deliveryPrice+priceAllProduct)
+        let retourPrice = 0
 
-            await order.save()
+         if(order.orderStatus === 'RETOUR'){
+            await DeliveryCompany.findByPk(order.deliveryCompanyId).then((deliveryCompany) => {
+                retourPrice = deliveryCompany.retourPrice
+            })
+         }
+
+            const gain = order.totalAmount-(order.deliveryPrice+priceAllProduct+retourPrice)
+
+            let orderReadyDate = order.orderReadyDate
+            if(orderStatus === 'EN COURS'){
+                orderReadyDate = new Date(); 
+            }
+
+            await order.update({gain,orderReadyDate})
         })
 
 
         res.status(200).send({ message: "Order updated"});
     } catch (error) {
-        console.log(error)
       res.status(500).send({
         status:500,
         error:"server",

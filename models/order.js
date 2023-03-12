@@ -28,6 +28,7 @@ module.exports = (sequelize) => {
         note: Sequelize.TEXT,
         collectionDate: Sequelize.DATE,
         code: Sequelize.STRING,
+        orderReadyDate: Sequelize.DATE,
         }, {
             timestamps: true,
             createdAt: 'created_at',

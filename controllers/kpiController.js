@@ -54,10 +54,10 @@ exports.getstatisticsTotalAmount = async function(req, res){
 
         const statistics = await Order.findAll({
             attributes: [
-              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm), period],
+              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('orderReadyDate'), timeForm), period],
               [db.Sequelize.fn('sum', db.Sequelize.col('totalAmount')), 'totalAmount'],
             ],
-            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm)],
+            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('orderReadyDate'), timeForm)],
             where: {
               orderStatus: orderStatus
             },
@@ -88,10 +88,10 @@ exports.getstatisticsGain = async function(req, res){
 
         const statistics = await Order.findAll({
             attributes: [
-              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm), period],
+              [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('orderReadyDate'), timeForm), period],
               [db.Sequelize.fn('sum', db.Sequelize.col('gain')), 'gain'],
             ],
-            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), timeForm)],
+            group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('orderReadyDate'), timeForm)],
             where: {
               orderStatus: orderStatus
             },

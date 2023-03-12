@@ -3126,7 +3126,7 @@
           },
           {
             "name": "period",
-            "in": "query",
+            "in": "EN COURS/LIVRÉ/PAYÉ",
             "type": "week/month/year"
           }
         ],
