@@ -77,8 +77,8 @@ exports.createOrder = async function (req, res) {
         }
          
         const gain = totalAmount-(deliveryPrice+priceAllProduct)
-
-        const order = await Order.create({
+        let orderId
+        await Order.create({
             clientName,
             phoneNumber,
             address,
@@ -96,12 +96,8 @@ exports.createOrder = async function (req, res) {
             reduction,
             sponsorId
         },{transaction}).then(async (order) => {
-
-            const code = await generateFactureCode(order.id)
-            order.code = code
-            await order.save()
-
-            let data = arrayReferenceQuantity.map((item)=>{
+            orderId = order.id
+            let data = await arrayReferenceQuantity.map((item)=>{
                 return {...item,orderId:order.id}
             })
 
@@ -109,6 +105,9 @@ exports.createOrder = async function (req, res) {
           });
 
         await transaction.commit();
+
+        const code = await generateFactureCode(orderId)
+            await Order.update({code},{where:{id:orderId}})
 
         res.status(200).send({ message:"order created" });
     } catch (error) {
