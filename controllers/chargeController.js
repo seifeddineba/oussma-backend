@@ -132,10 +132,8 @@ exports.updateCharge = async function(req,res){
                   include: [{
                   model: Charge,
                     where: {
-                      [Op.or]: [
-                        { type: { [Op.like]: `%${type}%` } },
-                        { chargeType: { [Op.like]: `%${chargeType}%` } }
-                      ]
+                      type: type?type:null,
+                      chargeType: chargeType,
                     },
                     include:[{model:Vendor},{model:DeliveryCompany}]
                     }]
