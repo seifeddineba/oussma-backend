@@ -54,10 +54,10 @@ exports.getstatisticsTotalAmount = async function(req, res){
             ],
             group: [db.Sequelize.fn('DATE_FORMAT', db.Sequelize.col('created_at'), '%x-%v')],
             where: {
-                created_at: {
-                [Op.gte]: moment().subtract(1, 'weeks').toDate(),
-                orderStatus:orderStatus
-              },
+            //     created_at: {
+            //     [Op.gte]: moment().subtract(1, 'weeks').toDate(),
+            //   },
+              orderStatus:orderStatus
             },
           });
           
