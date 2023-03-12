@@ -3076,7 +3076,7 @@
         }
       }
     }, 
-    "/api/orderService/getstatisticsForOrderAndPackage": {
+    "/api/kpiService/getstatisticsForOrderAndPackage": {
       "post": {
         "description": "",
         "parameters": [

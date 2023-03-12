@@ -14,6 +14,7 @@ module.exports = function (app) {
     const chargeController = require('../controllers/chargeController');
     const sponsorController = require('../controllers/sponsorController');
     const subscriptionController = require('../controllers/subscriptionController');
+    const kpiController = require('../controllers/kpiController');
 
 
     //auth
@@ -57,7 +58,7 @@ module.exports = function (app) {
     app.delete("/api/orderService/DeleteMultipleOrders", auth, orderController.DeleteMultipleOrders);
     app.put("/api/orderService/UpdateStatusForMultipleOrders", auth, orderController.UpdateStatusForMultipleOrders);
     app.get("/api/orderService/getDeliveryNoteForOrder", auth, orderController.getDeliveryNoteForOrder);
-    app.get("/api/orderService/getstatisticsForOrderAndPackage", auth, orderController.getstatisticsForOrderAndPackage);
+
 
 
     //product
@@ -124,4 +125,10 @@ module.exports = function (app) {
 
     //subscription
     app.get("/api/subscriptionService/getAllSubscription",subscriptionController.getAllSubscription);
+
+
+    //kpi api 
+    app.get("/api/kpiService/getstatisticsForOrderAndPackage", auth, kpiController.getstatisticsForOrderAndPackage);
+    app.get("/api/kpiService/getstatisticsTotalAmount", auth, kpiController.getstatisticsTotalAmount);
+    
 }

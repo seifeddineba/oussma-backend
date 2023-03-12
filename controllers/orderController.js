@@ -35,6 +35,8 @@ exports.createOrder = async function (req, res) {
 
         const transaction = await db.sequelize.transaction();
 
+        let priceAllProduct=0
+
         for (let i = 0; i < arrayReferenceQuantity.length; i++) {
             // const product = await Product.findByPk(arrayReferenceQuantity[i].productId);
             // if(!product) {
@@ -61,16 +63,20 @@ exports.createOrder = async function (req, res) {
                 if(!product) {
                     return res.status(500).send({ error: 'product not found' });
                 }
+
+                priceAllProduct+=(product.purchaseAmount*arrayReferenceQuantity[i].quantity)
+
                 product.stock -= arrayReferenceQuantity[i].quantity;
+
                 await product.save({transaction});
                 await reference.save({transaction});
             }
             
             //
         }
+         
+        const gain = totalAmount-(deliveryPrice+priceAllProduct)
 
-        
-        //gain a caluculer
         const order = await Order.create({
             clientName,
             phoneNumber,
@@ -83,7 +89,7 @@ exports.createOrder = async function (req, res) {
             collectionDate,
             exchange,
             exchangeReceipt,
-            gain:0,
+            gain,
             storeId: store.id,
             deliveryCompanyId,
             reduction,
@@ -195,6 +201,7 @@ exports.updateOrder = async function(req,res){
     // Update the order's products and quantities
     //await order.addReferences(referenceToAddOrUpdate);
     const updateOnDuplicate = ['quantity'];
+
     await OrderReference.bulkCreate(referenceToAddOrUpdate, { updateOnDuplicate });
     if (referenceIdsToDelete.length > 0) {
       await order.removeReferences(referenceIdsToDelete);
@@ -287,7 +294,25 @@ exports.updateOrder = async function(req,res){
         
 
         await Order.update(req.body,{where:{id:req.query.id}},{transaction});
+
         await transaction.commit()
+
+        await Order.findOne({where:{id:req.query.id},include:[{model:Reference}]})
+        .then( async (order) =>{
+            let priceAllProduct = 0
+            for (let index = 0; index < order.references.length; index++) {
+
+                const reference = order.references[index];
+
+                const product = await Product.findByPk(reference.productId)
+                priceAllProduct+=(product.purchaseAmount*reference.quantity)
+            }
+
+            order.gain = order.totalAmount-(order.deliveryPrice+priceAllProduct)
+
+            await order.save()
+        })
+
 
         res.status(200).send({ message: "Order updated"});
     } catch (error) {
@@ -539,28 +564,3 @@ exports.getDeliveryNoteForOrder = async function(req,res){
     }
 
 }
-
-exports.getstatisticsForOrderAndPackage = async function(req, res){
-
-    try {
-        const orderStatusCounts = await Order.findAll({
-            attributes: ['orderStatus', [db.Sequelize.fn('COUNT', db.Sequelize.col('id')), 'count']],
-            group: ['orderStatus']
-          });
-          
-          // Calculate the number of orders for each status
-          const result = {};
-          orderStatusCounts.forEach(statusCount => {
-            result[statusCount.orderStatus] = statusCount.get('count');
-          });
-      
-          res.status(200).send(result);
-    } catch (error) {
-        res.status(500).send({
-            error:"server",
-            message : error.message
-        }); 
-    }
-
-}
-

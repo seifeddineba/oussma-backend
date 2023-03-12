@@ -70,7 +70,10 @@ exports.createProduct = async function (req,res){
                 // await transaction.commit();
                 //res.status(200).send({ message:"order created" });
               });
-        await product.update({fileId:createdFile.id})
+              if(createdFile){
+                await product.update({fileId:createdFile.id})
+              }
+              
         
         });
 

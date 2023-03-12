@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-module.exports.validateOwner = function validateOwner(owner) {
+module.exports.validateOwner = async function validateOwner(owner) {
     const schema = Joi.object({
         fullName: Joi.string().required(),
         email: Joi.string().required(),
@@ -13,7 +13,7 @@ module.exports.validateOwner = function validateOwner(owner) {
     return schema.validate(owner);
 }
 
-module.exports.validateStore = function validateStore(store){
+module.exports.validateStore = async function validateStore(store){
     const schema = Joi.object().keys({
         storeName: Joi.string().required(),
         email: Joi.string().required(),
@@ -28,7 +28,7 @@ module.exports.validateStore = function validateStore(store){
     return schema.validate(store);
 }
 
-module.exports.validateStoreUser = function validateStoreUser(storeUser){
+module.exports.validateStoreUser = async function validateStoreUser(storeUser){
     const schema = Joi.object().keys({
         fullName: Joi.string().required(),
         login: Joi.string().required(),
@@ -41,7 +41,7 @@ module.exports.validateStoreUser = function validateStoreUser(storeUser){
 }
 
 
-module.exports.validateSubscription = function validateSubscription(subscription){
+module.exports.validateSubscription = async function validateSubscription(subscription){
     const schema = Joi.object().keys({
         description: Joi.string().required(),
         period: Joi.number().required(),
@@ -53,7 +53,7 @@ module.exports.validateSubscription = function validateSubscription(subscription
     return schema.validate(subscription)
 }
 
-module.exports.validateOrder = function validateOrder(order){
+module.exports.validateOrder = async function validateOrder(order){
     const schema = Joi.object().keys({
         clientName: Joi.string().optional().allow(''),
         phoneNumber: Joi.string().optional().allow(''),
@@ -98,7 +98,7 @@ module.exports.validateProduct = async function validateProduct(product){
     return schema.validate(product)
 }
 
-module.exports.validateArrival = function validateArrival(arrival){
+module.exports.validateArrival = async function validateArrival(arrival){
     const schema = Joi.object().keys({
         referencesQuantity: Joi.array().items(Joi.object({referenceId:Joi.number().required(),quantity: Joi.number().required()})).required(),
         buyingPrice: Joi.number().required(),
@@ -113,7 +113,7 @@ module.exports.validateArrival = function validateArrival(arrival){
 }
 
 
-module.exports.validateVendor = function validateVendor(vendor){
+module.exports.validateVendor = async function validateVendor(vendor){
     const schema = Joi.object().keys({
         name: Joi.string().required(),
         email : Joi.string().optional().allow(''),
@@ -126,7 +126,7 @@ module.exports.validateVendor = function validateVendor(vendor){
     return schema.validate(vendor)
 }
 
-module.exports.validateCategory = function validateCategory(category){
+module.exports.validateCategory = async function validateCategory(category){
     const schema = Joi.object().keys({
         categoryName: Joi.string().required(),
         storeIds: Joi.array().items(Joi.number()).required()
@@ -135,7 +135,7 @@ module.exports.validateCategory = function validateCategory(category){
 }
 
 
-module.exports.validateDeliveryCompany = function validateDeliveryCompany(deliveryCompany){
+module.exports.validateDeliveryCompany = async function validateDeliveryCompany(deliveryCompany){
     const schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().required(),
@@ -150,7 +150,7 @@ module.exports.validateDeliveryCompany = function validateDeliveryCompany(delive
     return schema.validate(deliveryCompany)
 }
 
-module.exports.validateCharge = function validateCharge(charge){
+module.exports.validateCharge = async function validateCharge(charge){
     const schema = Joi.object().keys({
         chargeType: Joi.string().valid('PAYMENT', 'CHARGE','ACHAT').required().allow(""),
         type: Joi.string().valid('REÇU','EFFECTUÉ').optional().allow(''),
@@ -166,7 +166,7 @@ module.exports.validateCharge = function validateCharge(charge){
 }
 
 
-module.exports.validateSponsor = function validateSponsor(sponsor){
+module.exports.validateSponsor = async function validateSponsor(sponsor){
     const schema = Joi.object().keys({
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
@@ -179,7 +179,7 @@ module.exports.validateSponsor = function validateSponsor(sponsor){
     return schema.validate(sponsor)
 }
 
-module.exports.isEmptyObject =   function(obj){
+module.exports.isEmptyObject = async function(obj){
     let values = Object.values(obj);
     return values.some(value => value === null || value === '');
 }
